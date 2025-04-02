@@ -17,6 +17,7 @@ namespace Brewserve.API.Controllers
         /// Initializes a new instance of the "BreweryController"/> class.
         /// </summary>
         /// <param name="breweryService">The brewery service.</param>
+        /// <param name="logger">The logger.</param>
         public BreweryController(IBreweryService breweryService, ILogger<BarController> logger)
         {
             _breweryService = breweryService;
@@ -97,15 +98,15 @@ namespace Brewserve.API.Controllers
         /// <summary>
         /// Update a brewery by Id
         /// </summary>
-        /// <param name="breweryId">The ID of the brewery to update.</param>
+        /// <param name="id">The ID of the brewery to update.</param>
         /// <param name="brewery">The updated brewery details.</param>
         /// <returns>A response indicating the result of the operation.</returns>
-        [HttpPut]
+        [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<List<string>>), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateBrewery(int breweryId, BreweryRequest brewery)
+        public async Task<IActionResult> UpdateBrewery(int id, BreweryRequest brewery)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid && id != brewery.Id)
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList();
                 var errorResponse = new ApiResponse<IEnumerable<BreweryResponse>>(errors);
@@ -118,5 +119,7 @@ namespace Brewserve.API.Controllers
 
             return Ok(response);
         }
+
+
     }
 }

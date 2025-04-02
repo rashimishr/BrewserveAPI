@@ -22,6 +22,7 @@ namespace Brewserve.API.Controllers
         /// </summary>
         /// <param name="beerService">The beer service.</param>
         /// <param name="strategy">The strategy for filtering beers by alcohol content.</param>
+        /// <param name="logger">The logger.</param>
         public BeerController(IBeerService beerService, BeerByAlcoholContentStrategy strategy, ILogger<BarController> logger)
         {
             _beerService = beerService;
@@ -110,15 +111,15 @@ namespace Brewserve.API.Controllers
         /// <summary>
         /// Update a beer by Id
         /// </summary>
-        /// <param name="beerId">The ID of the beer to update.</param>
+        /// <param name="id">The ID of the beer to update.</param>
         /// <param name="beer">The updated beer details.</param>
         /// <returns>A response indicating the result of the operation.</returns>
-        [HttpPut]
+        [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<List<string>>), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateBeer(int beerId, BeerRequest beer)
+        public async Task<IActionResult> UpdateBeer(int id, BeerRequest beer)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid && id != beer.Id)
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList();
                 var errorResponse = new ApiResponse<IEnumerable<BarResponse>>(errors);

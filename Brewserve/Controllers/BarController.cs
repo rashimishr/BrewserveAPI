@@ -100,15 +100,15 @@ namespace Brewserve.API.Controllers
         /// <summary>
         /// Update a bar by Id
         /// </summary>
-        /// <param name="barId">The ID of the bar to update.</param>
+        /// <param name="id">The ID of the bar to update.</param>
         /// <param name="bar">The updated bar details.</param>
         /// <returns>A response indicating the result of the operation.</returns>
-        [HttpPut("{barId}")]
+        [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<List<string>>), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateBar(int barId, BarRequest bar)
+        public async Task<IActionResult> UpdateBar(int id, BarRequest bar)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid && id != bar.Id)
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList();
                 var errorResponse = new ApiResponse<IEnumerable<BarResponse>>(errors);
