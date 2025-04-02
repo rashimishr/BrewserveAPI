@@ -1,13 +1,13 @@
-﻿using Brewserve.Core.DTOs;
+﻿using Brewserve.Core.Payloads;
 using Brewserve.Core.Interfaces;
 
 namespace Brewserve.Core.Factories
 {
     public class Breweryfactory : IBreweryFactory
     {
-        public BreweryDTO CreateBreweryDTO(string name)
+        public BreweryRequest CreateBreweryRequest(string name)
         {
-            return new BreweryDTO
+            return new BreweryRequest
             {
                 Name = name,
             };

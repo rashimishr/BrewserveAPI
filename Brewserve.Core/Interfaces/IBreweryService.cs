@@ -1,14 +1,12 @@
-﻿
-
-using Brewserve.Core.DTOs;
+﻿using Brewserve.Core.Payloads;
 
 namespace Brewserve.Core.Interfaces
 {
     public interface IBreweryService
     {
-       Task<IEnumerable<BreweryDTO>> GetBreweriesAsync();
-       Task<BreweryDTO> GetBreweryByIdAsync(int id);
-       Task<BreweryDTO> AddBreweryAsync(CreateBreweryDTO breweryDto);
-       Task UpdateBreweryAsync(int id, BreweryDTO breweryDto);
+       Task<IEnumerable<BreweryResponse>> GetBreweriesAsync();
+       Task<BreweryResponse> GetBreweryByIdAsync(int id);
+       Task<BreweryResponse> AddBreweryAsync(CreateBreweryRequest brewery);
+       Task UpdateBreweryAsync(BreweryRequest brewery);
     }
 }

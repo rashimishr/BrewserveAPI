@@ -1,14 +1,14 @@
 ﻿
-using Brewserve.Core.DTOs;
+using Brewserve.Core.Payloads;
 using Brewserve.Core.Interfaces;
 
 namespace Brewserve.Core.Factories
 {
     public class BarFactory: IBarFactory
     {
-        public BarDTO CreateBarDTO(string name, string address)
+        public BarRequest CreateBarRequest(string name, string address)
         {
-            return new BarDTO
+            return new BarRequest
             {
                 Name = name,
                 Address = address

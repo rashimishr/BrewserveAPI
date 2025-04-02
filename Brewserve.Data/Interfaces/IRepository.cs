@@ -9,6 +9,5 @@ namespace Brewserve.Data.Interfaces
         Task AddAsync(TEntity entity);
         Task UpdateAsync(TEntity entity);
         Task SaveAsync(int id);
-        //Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate);
     }
 }

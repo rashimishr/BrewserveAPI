@@ -1,4 +1,4 @@
-﻿using Brewserve.Core.DTOs;
+﻿using Brewserve.Core.Payloads;
 using Brewserve.Core.Interfaces;
 using Brewserve.Data.Interfaces;
 using Brewserve.Data.Models;
@@ -14,7 +14,7 @@ namespace Brewserve.Core.Strategies
             _strategy = strategy;
         }
 
-        public async Task<IEnumerable<BeerDTO>> FilterAsync()
+        public async Task<IEnumerable<BeerResponse>> FilterAsync()
         {
             if(_strategy == null)
             {

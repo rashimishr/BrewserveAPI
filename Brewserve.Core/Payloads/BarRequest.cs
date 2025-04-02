@@ -1,16 +1,16 @@
 ﻿
-namespace Brewserve.Core.DTOs
+namespace Brewserve.Core.Payloads
 {
-    public class CreateBarDTO
+    public class CreateBarRequest
     {
         public string Name { get; set; }
         public string Address { get; set; }
     }
-    public class BarDTO
+    public class BarRequest
     {
         public int Id { get; set; }
         public string Name { get; set; }
         public string Address { get; set; }
-        public List<BeerDTO> Beers { get; set; }
+        public List<BeerRequest> Beers { get; set; }
     }
 }

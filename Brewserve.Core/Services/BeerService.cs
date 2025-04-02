@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Brewserve.Core.DTOs;
+using Brewserve.Core.Payloads;
 using Brewserve.Core.Interfaces;
 using Brewserve.Core.Strategies;
 using Brewserve.Data.Interfaces;
@@ -18,36 +18,41 @@ namespace Brewserve.Core.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<BeerDTO>> GetBeersAsync()
+        public async Task<IEnumerable<BeerResponse>> GetBeersAsync()
         {
             var beers = await _unitOfWork.Beers.GetAllAsync();
-            return _mapper.Map<IEnumerable<BeerDTO>>(beers);
+            return _mapper.Map<IEnumerable<BeerResponse>>(beers);
         }
 
-        public async Task<BeerDTO> GetBeerByIdAsync(int id)
+        public async Task<BeerResponse> GetBeerByIdAsync(int id)
         {
             var beer = await _unitOfWork.Beers.GetByIdAsync(id);
-            return _mapper.Map<BeerDTO>(beer);
+            return _mapper.Map<BeerResponse>(beer);
         }
 
-        public async Task<BeerDTO> AddBeerAsync(CreateBeerDTO beerDto)
+        public async Task<BeerResponse> AddBeerAsync(CreateBeerRequest beer)
         {
-            var beerEntity = _mapper.Map<Beer>(beerDto);
+            var beerEntity = _mapper.Map<Data.Models.Beer>(beer);
 
+            var exists = _unitOfWork.Beers.GetAllAsync().Result.Any(b => b.Name == beer.Name);
+            if(exists)
+            {
+                return null;
+            }
             await _unitOfWork.Beers.AddAsync(beerEntity);
-            var beer = await _unitOfWork.SaveAsync();
+            var savedBeer = await _unitOfWork.SaveAsync();
 
-            return _mapper.Map<BeerDTO>(beer);
+            return _mapper.Map<BeerResponse>(beerEntity);
         }
 
-        public async Task UpdateBeerAsync(BeerDTO beerDto)
+        public async Task UpdateBeerAsync(BeerRequest beer)
         {
-            var beer = _mapper.Map<Beer>(beerDto);
-            _unitOfWork.Beers.UpdateAsync(beer);
-            await _unitOfWork.SaveAsync();
+            var beerEntity = _mapper.Map<Data.Models.Beer>(beer);
+            await _unitOfWork.Beers.UpdateAsync(beerEntity);
+            var updatedBeer = await _unitOfWork.SaveAsync();
         }
 
-        public async Task<IEnumerable<BeerDTO>> GetBeersByAlcoholContentAsync(decimal gtAlcoholByVolume, decimal ltAlcoholByVolume)
+        public async Task<IEnumerable<BeerResponse>> GetBeersByAlcoholContentAsync(decimal gtAlcoholByVolume, decimal ltAlcoholByVolume)
         {
            var strategy = new BeerByAlcoholContentStrategy(_unitOfWork, _mapper);
 

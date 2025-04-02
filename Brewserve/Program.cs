@@ -11,15 +11,24 @@ using Brewserve.Core.Strategies;
 using Brewserve.Data.Interfaces;
 using Brewserve.Data.Repositories;
 using Microsoft.OpenApi.Models;
+using AutoMapper;
+using Brewserve.Core.Mapping;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Register UnitOfWork, mapper and strategy
+var mapperConfig = new MapperConfiguration(cfg =>
+{
+    cfg.AddProfile(new AutoMapperProfile());
+});
+IMapper mapper = mapperConfig.CreateMapper();
+mapperConfig.AssertConfigurationIsValid();
+builder.Services.AddSingleton(mapper);
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddAutoMapper((typeof(Program)));
+//builder.Services.AddAutoMapper((typeof(Program)));
 builder.Services.AddTransient<BeerByAlcoholContentStrategy>();
 
-//configure serilog from appsettings
+//configure serilog from app settings
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .CreateLogger();

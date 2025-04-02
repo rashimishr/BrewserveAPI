@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Brewserve.Core.DTOs;
+using Brewserve.Core.Payloads;
 using Brewserve.Core.Interfaces;
 using Brewserve.Data.Interfaces;
 using Brewserve.Data.Models;
@@ -17,37 +17,39 @@ namespace Brewserve.Core.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<BreweryDTO>> GetBreweriesAsync()
+        public async Task<IEnumerable<BreweryResponse>> GetBreweriesAsync()
         {
             var breweries = await _unitOfWork.Breweries.GetAllAsync();
-            return _mapper.Map<IEnumerable<BreweryDTO>>(breweries);
+            return _mapper.Map<IEnumerable<BreweryResponse>>(breweries);
         }
 
-        public async Task<BreweryDTO> GetBreweryByIdAsync(int id)
+        public async Task<BreweryResponse> GetBreweryByIdAsync(int id)
         {
             var brewery = await _unitOfWork.Breweries.GetByIdAsync(id);
-            return _mapper.Map<BreweryDTO>(brewery);
+            return _mapper.Map<BreweryResponse>(brewery);
         }
 
-        public async Task<BreweryDTO> AddBreweryAsync(CreateBreweryDTO breweryDto)
+        public async Task<BreweryResponse> AddBreweryAsync(CreateBreweryRequest brewery)
         {
-            var breweryEntity = _mapper.Map<Brewery>(breweryDto);
-            await _unitOfWork.Breweries.AddAsync(breweryEntity);
-            var brewery = await _unitOfWork.SaveAsync();
-
-            return _mapper.Map<BreweryDTO>(brewery);
-        }
-
-        public async Task UpdateBreweryAsync(int id, BreweryDTO breweryDto)
-        {
-            var brewery = await _unitOfWork.Breweries.GetByIdAsync(id);
-            if (brewery == null)
+            var breweryEntity = _mapper.Map<Brewery>(brewery);
+            var exists = _unitOfWork.Breweries.GetAllAsync().Result.Any(b => b.Name == brewery.Name);
+            if (exists)
             {
-                throw new Exception("Brewery not found");
+                return null;
             }
-            _mapper.Map(breweryDto, brewery);
-            _unitOfWork.Breweries.UpdateAsync(brewery);
-            await _unitOfWork.SaveAsync();
+            await _unitOfWork.Breweries.AddAsync(breweryEntity);
+            var savedBrewery = await _unitOfWork.SaveAsync();
+
+            return _mapper.Map<BreweryResponse>(breweryEntity);
+        }
+
+        public async Task UpdateBreweryAsync(BreweryRequest brewery)
+        {
+            var breweryUpdated = await _unitOfWork.Breweries.GetByIdAsync(brewery.Id);
+           
+            var breweryEntity = _mapper.Map(brewery, brewery);
+            _unitOfWork.Breweries.UpdateAsync(breweryUpdated);
+            var updatedBrewery = await _unitOfWork.SaveAsync();
         }
 
     }

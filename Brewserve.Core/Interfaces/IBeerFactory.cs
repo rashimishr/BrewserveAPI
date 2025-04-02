@@ -1,9 +1,10 @@
-﻿using Brewserve.Core.DTOs;
+﻿using Brewserve.Core.Payloads;
 
 namespace Brewserve.Core.Interfaces
 {
     public interface IBeerFactory
     {
-        BeerDTO CreateBeerDTO(string name, decimal percentageAlcoholByVolume);
+        BeerRequest CreateBeerRequest(string name, decimal percentageAlcoholByVolume);
     }
 }
+    

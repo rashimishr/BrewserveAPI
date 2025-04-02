@@ -1,10 +1,10 @@
 ﻿
-using Brewserve.Core.DTOs;
+using Brewserve.Core.Payloads;
 
 namespace Brewserve.Core.Interfaces
 {
     public interface IBarFactory
     {
-        BarDTO CreateBarDTO(string name, string address);
+        BarRequest CreateBarRequest(string name, string address);
     }
 }

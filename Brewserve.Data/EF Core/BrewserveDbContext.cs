@@ -33,7 +33,6 @@ namespace Brewserve.Data.EF_Core
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
             //table relationship and table configurations
             modelBuilder.Entity<Beer>()
                 .HasKey(b => b.Id);

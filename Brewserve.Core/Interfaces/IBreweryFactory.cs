@@ -1,9 +1,9 @@
-﻿using Brewserve.Core.DTOs;
+﻿using Brewserve.Core.Payloads;
 
 namespace Brewserve.Core.Interfaces
 {
     public interface IBreweryFactory
     {
-        BreweryDTO CreateBreweryDTO(string name);
+        BreweryRequest CreateBreweryRequest(string name);
     }
 }

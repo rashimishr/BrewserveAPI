@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Brewserve.Core.DTOs;
+using Brewserve.Core.Payloads;
 using Brewserve.Core.Interfaces;
 using Brewserve.Data.Interfaces;
 using Brewserve.Data.Models;
@@ -25,10 +25,10 @@ namespace Brewserve.Core.Strategies
             _gtAlcoholByVolume = gtAlcoholByVolume;
             _ltAlcoholByVolume = ltAlcoholByVolume;
         }
-        public async Task<IEnumerable<BeerDTO>> FilterAsync()
+        public async Task<IEnumerable<BeerResponse>> FilterAsync()
         {
             var beers = await _unitOfWork.Beers.GetBeersByAlcoholContentAsync(_gtAlcoholByVolume, _ltAlcoholByVolume);
-            return _mapper.Map<IEnumerable<BeerDTO>>(beers);
+            return _mapper.Map<IEnumerable<BeerResponse>>(beers);
         }
     }
 }
