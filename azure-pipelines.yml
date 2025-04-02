@@ -1,0 +1,38 @@
+
+trigger:
+- master
+
+pool:
+  vmImage: windows-latest
+
+steps:
+- task: DotNetCoreCLI@2
+  displayName: 'nuget restore'
+  inputs:
+    command: 'restore'
+    projects: '**/*.csproj'
+    feedsToUse: 'select'
+
+- task: DotNetCoreCLI@2
+  displayName: 'unit tests'
+  inputs:
+    command: 'test'
+    projects: '''**/*tests.csproj'''
+
+- task: DotNetCoreCLI@2
+  displayName: 'build'
+  inputs:
+    command: 'build'
+    projects: '**/*.csproj'
+    arguments: '--configuration Release'
+
+
+- task: DotNetCoreCLI@2
+  displayName: 'publish artifacts'
+  inputs:
+    command: 'publish'
+    publishWebProjects: true
+    arguments: '-c Release --output $(Build.ArtifactStagingDirectory)'
+
+
+
