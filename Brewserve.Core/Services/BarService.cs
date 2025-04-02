@@ -49,5 +49,31 @@ namespace Brewserve.Core.Services
             _unitOfWork.Bars.UpdateAsync(barEntity);
             var updatedBar = await _unitOfWork.SaveAsync();
         }
+        public async Task<IEnumerable<BarResponse>> GetBarBeerLinkAsync()
+        {
+            var bars = await _unitOfWork.BarBeersLinks.GetAssociatedBarBeersAsync();
+            return _mapper.Map<IEnumerable<BarResponse>>(bars);
+        }
+
+        public async Task<BarResponse> GetBarBeerLinkByBarIdAsync(int id)
+        {
+            var bar = await _unitOfWork.BarBeersLinks.GetAssociatedBarBeersByBarIdAsync(id);
+            return _mapper.Map<BarResponse>(bar);
+        }
+        public async Task<BarResponse> AddBarBeerLinkAsync(BarBeerLinkRequest barBeer)
+        {
+            var existingBar = _unitOfWork.Bars.GetByIdAsync(barBeer.BarId);
+            var existingBeer = _unitOfWork.Beers.GetByIdAsync(barBeer.BeerId);
+            var existingLink = _unitOfWork.BarBeersLinks.GetAssociatedBarBeersByBarIdAsync(barBeer.BarId);
+            if (existingLink != null || existingBar == null || existingBeer == null)
+            {
+                return null;
+            }
+            var barBeerEntity = _mapper.Map<BarBeerLink>(barBeer);
+            await _unitOfWork.BarBeersLinks.AddAsync(barBeerEntity);
+            var savedBar = await _unitOfWork.SaveAsync();
+
+            return _mapper.Map<BarResponse>(barBeerEntity);
+        }
     }
 }

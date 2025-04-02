@@ -31,7 +31,7 @@ namespace Brewserve.API.Controllers
         }
 
         /// <summary>
-        ///  /// Get all beers with optional filtering query parameters for alcohol content
+        /// Get all beers with optional filtering query parameters for alcohol content
         ///                       (gtAlcoholByVolume = greater than, ltAlcoholByVolume = less than)
         /// </summary>
         /// <param name="gtAlcoholByVolume">The minimum alcohol content.</param>
@@ -61,7 +61,7 @@ namespace Brewserve.API.Controllers
         }
 
         /// <summary>
-        /// Get beer by Id
+        /// Get beer by id
         /// </summary>
         /// <param name="id">The ID of the beer to retrieve.</param>
         /// <returns>The beer details.</returns>

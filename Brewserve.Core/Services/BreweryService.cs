@@ -52,5 +52,31 @@ namespace Brewserve.Core.Services
             var updatedBrewery = await _unitOfWork.SaveAsync();
         }
 
+        public async Task<IEnumerable<BreweryResponse>> GetBreweryBeerLinkAsync()
+        {
+            var brewery = await _unitOfWork.BreweryBeersLinks.GetAssociatedBreweryBeersAsync();
+            return _mapper.Map<IEnumerable<BreweryResponse>>(brewery);
+        }
+
+        public async Task<BreweryResponse> GetBreweryBeerLinkByBreweryIdAsync(int id)
+        {
+            var brewery = await _unitOfWork.BreweryBeersLinks.GetAssociatedBreweryBeersByBreweryIdAsync(id);
+            return _mapper.Map<BreweryResponse>(brewery);
+        }
+        public async Task<BreweryResponse> AddBreweryBeerLinkAsync(BreweryBeerLinkRequest breweryBeer)
+        {
+            var existingBrewery = _unitOfWork.Breweries.GetByIdAsync(breweryBeer.BreweryId);
+            var existingBeer = _unitOfWork.Beers.GetByIdAsync(breweryBeer.BeerId);
+            var existingLink = _unitOfWork.BreweryBeersLinks.GetAssociatedBreweryBeersByBreweryIdAsync(breweryBeer.BreweryId);
+            if (existingLink != null || existingBrewery == null || existingBeer == null)
+            {
+                return null;
+            }
+            var breweryBeerEntity = _mapper.Map<BreweryBeerLink>(breweryBeer);
+            await _unitOfWork.BreweryBeersLinks.AddAsync(breweryBeerEntity);
+            var savedBar = await _unitOfWork.SaveAsync();
+
+            return _mapper.Map<BreweryResponse>(breweryBeerEntity);
+        }
     }
 }

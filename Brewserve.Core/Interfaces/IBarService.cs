@@ -8,5 +8,8 @@ namespace Brewserve.Core.Interfaces
         Task<BarResponse> GetBarByIdAsync(int id);
         Task<BarResponse> AddBarAsync(CreateBarRequest bar);
         Task UpdateBarAsync(BarRequest bar);
+        Task<IEnumerable<BarResponse>> GetBarBeerLinkAsync();
+        Task<BarResponse> GetBarBeerLinkByBarIdAsync(int id);
+        Task<BarResponse> AddBarBeerLinkAsync(BarBeerLinkRequest barBeer);
     }
 }

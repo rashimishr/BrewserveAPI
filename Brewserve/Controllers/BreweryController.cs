@@ -120,6 +120,26 @@ namespace Brewserve.API.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// Insert a single brewery beer link
+        /// </summary>
+        /// <param name="linkRequest">The brewery  beer link.</param>
+        /// <returns>A response indicating the result of the operation.</returns>
+        [HttpPost("beer")]
+        [ProducesResponseType(typeof(ApiResponse<BreweryResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<List<string>>), StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult> AddBreweryBeerLinkAsync(BreweryBeerLinkRequest linkRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                var errorResponse = new ApiResponse<IEnumerable<BreweryResponse>>(errors);
 
+                return BadRequest(errorResponse);
+            }
+            var savedLink = await _breweryService.AddBreweryBeerLinkAsync(linkRequest);
+           
+            return Ok();
+        }
     }
 }

@@ -48,6 +48,11 @@ namespace Brewserve.Core.Mapping
                 }).ToList()))
                 .ReverseMap();
             CreateMap<Brewery, BreweryResponse>().ReverseMap();
+
+            // BarBeerLink Mappings
+            CreateMap<BarBeerLink, BarBeerLinkRequest>().ReverseMap();
+            // BreweryBeerLink Mappings
+            CreateMap<BreweryBeerLink, BreweryBeerLinkRequest>().ReverseMap();
         }
     }
 }
