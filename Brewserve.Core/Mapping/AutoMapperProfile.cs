@@ -33,8 +33,12 @@ namespace BrewServe.Core.Mapping
 
             // BarBeerLink Mappings
             CreateMap<BarBeerLink, BarBeerLinkRequest>();
+            CreateMap<Bar, BarBeerLinkResponse>()
+                .ForMember(dest => dest.Beers, opt => opt.MapFrom(src => src.BarBeers.Select(bbl => bbl.Beer)));
             // BreweryBeerLink Mappings
             CreateMap<BreweryBeerLink, BreweryBeerLinkRequest>();
+            CreateMap<Brewery, BreweryBeerLinkResponse>()
+                .ForMember(dest => dest.Beers, opt => opt.MapFrom(src => src.BreweryBeers.Select(bbl => bbl.Beer)));
         }
     }
 }

@@ -15,12 +15,12 @@ namespace BrewServe.Data.Repositories
                 .ThenInclude(bb => bb.Beer)
                 .ToListAsync();
         }
-        public async Task<IEnumerable<Bar>> GetAssociatedBarBeersByBarIdAsync(int barId)
+        public async Task<Bar> GetAssociatedBarBeersByBarIdAsync(int barId)
         {
-            return await _context.BarBeers
-                .Where(bbl => bbl.BarId == barId)
-                .Select(bbl => bbl.Bar)
-                .ToListAsync();
-        }
+            return await _context.Bars
+                .Include(b=>b.BarBeers)
+                .ThenInclude(bb=>bb.Beer)
+                .FirstOrDefaultAsync(bbl => bbl.Id == barId);
+       }
     }
 }
