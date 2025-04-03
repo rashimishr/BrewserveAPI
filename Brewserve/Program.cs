@@ -1,7 +1,6 @@
 using System.Reflection;
 using System.Text.Json.Serialization;
 using AutoMapper;
-using BrewServe.Core.Factories;
 using BrewServe.Core.Interfaces;
 using BrewServe.Core.Mapping;
 using BrewServe.Core.Services;
@@ -56,9 +55,6 @@ builder.Services.AddScoped<IBreweryService, BreweryService>();
 // Add services to the container.
 builder.Services.AddScoped<IBeerSearchStrategy, BeerByAlcoholContentStrategy>();
 builder.Services.AddScoped<BeerSearchContext>();
-builder.Services.AddScoped<IBeerFactory, BeerFactory>();
-builder.Services.AddScoped<IBarFactory, BarFactory>();
-builder.Services.AddScoped<IBreweryFactory, BreweryFactory>();
 
 //dd logging
 builder.Host.UseSerilog();
