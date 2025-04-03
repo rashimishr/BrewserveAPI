@@ -68,10 +68,12 @@ namespace BrewServe.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<BeerResponse>), StatusCodes.Status200OK)]
         public async Task<ActionResult<BeerResponse>> GetBeerByIdAsync(int id)
         {
+            _logger.LogInformation("Fetching beer with ID {BeerId}", id);
             var beer = await _beerService.GetBeerByIdAsync(id);
             if (beer == null)
             {
                 var errorResponse = new ApiResponse<BeerResponse>(Messages.RecordNotFound("Beer"));
+                _logger.LogError("Error occured while fetching beers for beer {BeerId}");
                 return Ok(errorResponse);
             }
             var response = new ApiResponse<BeerResponse>(beer);
@@ -92,13 +94,14 @@ namespace BrewServe.API.Controllers
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
                 var errorResponse = new ApiResponse<IEnumerable<BarResponse>>(errors);
-
+                _logger.LogError("Error occured while adding beer validation for beer {BeerId}");
                 return BadRequest(errorResponse);
             }
+            _logger.LogInformation("Adding a new beer");
             var savedBeer = await _beerService.AddBeerAsync(beer);
             if (savedBeer == null)
             {
-                var errorResponse = new ApiResponse<BeerResponse>("Record already exists");
+                var errorResponse = new ApiResponse<BeerResponse>(Messages.RecordAlreadyExists("Beer"));
                 return BadRequest(errorResponse);
             }
             var response = new ApiResponse<BeerResponse>(savedBeer);
@@ -120,9 +123,10 @@ namespace BrewServe.API.Controllers
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList();
                 var errorResponse = new ApiResponse<IEnumerable<BarResponse>>(errors);
-
+                _logger.LogError("Error occured while updating beer {BeerId}");
                 return BadRequest(errorResponse);
             }
+            _logger.LogInformation("Updating beer with ID {BeerId}", id);
             beer.Id = id;
             var updatedBeer = await _beerService.UpdateBeerAsync(beer);
             var response = new ApiResponse<BeerResponse>(updatedBeer, Messages.RecordUpdated("Beer", id));

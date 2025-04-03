@@ -55,6 +55,7 @@ namespace BrewServe.API.Controllers
         [ProducesResponseType(typeof(BarResponse), StatusCodes.Status200OK)]
        public async Task<ActionResult<BarResponse>> GetBarByIdAsync(int id)
         {
+            _logger.LogInformation("Fetching bar with ID {BarId}", id);
             var bar = await _barService.GetBarByIdAsync(id);
             if (bar == null)
             {
@@ -79,9 +80,10 @@ namespace BrewServe.API.Controllers
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
                 var errorResponse = new ApiResponse<IEnumerable<BarResponse>>(errors);
-
+                _logger.LogError("Error occured while adding bar validation");
                 return BadRequest(errorResponse);
             }
+            _logger.LogInformation("Adding a new bar");
             var savedBar = await _barService.AddBarAsync(bar);
             if (savedBar == null)
             {
@@ -108,9 +110,10 @@ namespace BrewServe.API.Controllers
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList();
                 var errorResponse = new ApiResponse<IEnumerable<BarResponse>>(errors);
-
+                _logger.LogError("Error occured while updating bar validation");
                 return BadRequest(errorResponse);
             }
+            _logger.LogInformation("Updating bar with ID {BarId}", id);
             bar.Id = id;
             await _barService.UpdateBarAsync(bar);
             var response = new ApiResponse<BarResponse>(Messages.RecordUpdated("Bar",id));
@@ -131,9 +134,10 @@ namespace BrewServe.API.Controllers
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
                 var errorResponse = new ApiResponse<IEnumerable<BarResponse>>(errors);
-
+                _logger.LogError("Error occured while adding beer-bar link validation");
                 return BadRequest(errorResponse);
             }
+            _logger.LogInformation("Adding a new bar beer link");
             var link = await _barService.AddBarBeerLinkAsync(linkRequest);
             var response = new ApiResponse<BarResponse>(link);
             return Ok(response);
@@ -153,6 +157,7 @@ namespace BrewServe.API.Controllers
             if (link == null || !link.Any())
             {
                 var errorResponse = new ApiResponse<IEnumerable<BarBeerLinkResponse>>([], Messages.RecordNotFound("Bar"));
+                _logger.LogError("Error occured while fetching all beer-bar link validation");
                 return Ok(errorResponse);
             }
             var response = new ApiResponse<IEnumerable<BarBeerLinkResponse>>(link);
@@ -173,8 +178,10 @@ namespace BrewServe.API.Controllers
             if (link == null)
             {
                 var errorResponse = new ApiResponse<IEnumerable<BarBeerLinkResponse>>(null, Messages.RecordNotFound("Bar"));
+                _logger.LogError("Error occured while fetching beer-bar link validation for bar {BarId}");
                 return Ok(errorResponse);
             }
+            _logger.LogInformation("Fetching bar beer link for bar ID {BarId}", barId);
             var response = new ApiResponse<BarBeerLinkResponse>(link);
             return Ok(response);
         }

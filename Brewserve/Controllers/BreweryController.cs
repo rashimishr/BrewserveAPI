@@ -56,10 +56,12 @@ namespace BrewServe.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<BreweryResponse>), StatusCodes.Status200OK)]
         public async Task<ActionResult<BreweryResponse>> GetBreweryByIdAsync(int id)
         {
+            _logger.LogInformation("Fetching brewery with ID {BreweryId}", id);
             var brewery = await _breweryService.GetBreweryByIdAsync(id);
             if (brewery == null)
             {
                 var errorResponse = new ApiResponse<BreweryResponse>(null, Messages.RecordNotFound("Brewery"));
+                _logger.LogError("Brewery with ID {BreweryId} not found", id);
                 return Ok(errorResponse);
             }
             var response = new ApiResponse<BreweryResponse>(brewery);
@@ -80,7 +82,7 @@ namespace BrewServe.API.Controllers
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
                 var errorResponse = new ApiResponse<IEnumerable<BreweryResponse>>(errors);
-
+                _logger.LogError("Invalid brewery data: {Errors}", errors);
                 return BadRequest(errorResponse);
             }
             var savedBrewery = await _breweryService.AddBreweryAsync(brewery);
@@ -89,6 +91,7 @@ namespace BrewServe.API.Controllers
                 var errorResponse = new ApiResponse<BreweryResponse>(Messages.RecordAlreadyExists("Brewery"));
                 return BadRequest(errorResponse);
             }
+            _logger.LogInformation("Brewery added successfully");
             var response = new ApiResponse<BreweryResponse>(savedBrewery);
             return Ok(response);
         }
@@ -108,9 +111,10 @@ namespace BrewServe.API.Controllers
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList();
                 var errorResponse = new ApiResponse<IEnumerable<BreweryResponse>>(errors);
-
+                _logger.LogError("Invalid brewery data: {Errors}", errors);
                 return BadRequest(errorResponse);
             }
+            _logger.LogInformation("Updating brewery with ID {BreweryId}", id);
             brewery.Id = id;
             var updatedBrewery = await _breweryService.UpdateBreweryAsync(brewery);
             var response = new ApiResponse<BreweryResponse>(updatedBrewery, Messages.RecordUpdated("Brewery",id));
@@ -131,8 +135,10 @@ namespace BrewServe.API.Controllers
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
                 var errorResponse = new ApiResponse<IEnumerable<BreweryResponse>>(errors);
+               _logger.LogError("Invalid brewery beer link data: {Errors}", errors);
                 return BadRequest(errorResponse);
             }
+            _logger.LogInformation("Adding a new brewery beer link");
             var link = await _breweryService.AddBreweryBeerLinkAsync(linkRequest);
             var response = new ApiResponse<BreweryResponse>(link);
             return Ok(response);
@@ -152,6 +158,7 @@ namespace BrewServe.API.Controllers
             if (link == null || !link.Any())
             {
                 var errorResponse = new ApiResponse<IEnumerable<BreweryBeerLinkResponse>>(Messages.RecordNotFound("Brewery"));
+                _logger.LogError("No breweries found with associated beers");
                 return Ok(errorResponse);
             }
             var response = new ApiResponse<IEnumerable<BreweryBeerLinkResponse>>(link);
@@ -167,10 +174,12 @@ namespace BrewServe.API.Controllers
         [ProducesResponseType(typeof(ApiResponse<BreweryBeerLinkResponse>), StatusCodes.Status200OK)]
         public async Task<ActionResult<BreweryBeerLinkResponse>> GetAssociatedBreweryBeerByBreweryIdAsync(int breweryId)
         {
+            _logger.LogInformation("Fetching brewery beer link with ID {BreweryId}", breweryId);
             var link = await _breweryService.GetBreweryBeerLinkByBreweryIdAsync(breweryId);
             if (link == null)
             {
                 var errorResponse = new ApiResponse<BreweryBeerLinkResponse>(Messages.RecordNotFound("Brewery"));
+                _logger.LogError("Brewery beer link with ID {BreweryId} not found", breweryId);
                 return Ok(errorResponse);
             }
             var response = new ApiResponse<BreweryBeerLinkResponse>(link);
