@@ -1,18 +1,25 @@
-﻿using Brewserve.Data.EF_Core;
-using Brewserve.Data.Interfaces;
-using Brewserve.Data.Models;
+﻿using BrewServe.Data.Interfaces;
+using BrewServe.Data.Models;
+using BrewServeData.EF_Core;
 using Microsoft.EntityFrameworkCore;
 
-namespace Brewserve.Data.Repositories
+namespace BrewServe.Data.Repositories
 {
     public class BeerRepository : Repository<Beer>, IBeerRepository
     {
-        public BeerRepository(BrewserveDbContext context) : base(context) { }
-        public async Task<IEnumerable<Beer>> GetBeersByAlcoholContentAsync(decimal gtAlcoholContent, decimal ltAlcoholContent)
+        public BeerRepository(BrewServeDbContext context) : base(context) { }
+        public async Task<IEnumerable<Beer>> GetBeersByAlcoholContentAsync(decimal? gtAlcoholContent, decimal? ltAlcoholContent)
         {
-            return await _context.Beers.
-                Where(b => b.PercentageAlcoholByVolume >= gtAlcoholContent && b.PercentageAlcoholByVolume <= ltAlcoholContent)
-                .ToListAsync();
+            IQueryable<Beer> query = _context.Beers;
+            if (gtAlcoholContent.HasValue)
+            {
+                query = query.Where(b => b.PercentageAlcoholByVolume >= gtAlcoholContent);
+            }
+            if (ltAlcoholContent.HasValue)
+            {
+                query = query.Where(b => b.PercentageAlcoholByVolume <= ltAlcoholContent);
+            }
+            return await query.ToListAsync();
         }
     }
 }

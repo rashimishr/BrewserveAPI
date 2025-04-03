@@ -1,11 +1,10 @@
-﻿using System.Text.Json.Serialization;
-
+﻿
 namespace BrewServe.Core.Payloads
 {
-    public class BreweryRequest
+    public class BreweryBeerLinkResponse
     {
-        [JsonIgnore]
         public int? Id { get; set; }
         public string Name { get; set; }
+        public List<BeerResponse> Beers { get; set; }
     }
 }

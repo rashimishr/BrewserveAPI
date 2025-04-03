@@ -1,12 +1,12 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace Brewserve.Data.Models
+namespace BrewServe.Data.Models
 {
     [ExcludeFromCodeCoverage]
     public class Brewery
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public string Name { get; set; }
-        public IList<BreweryBeerLink> BreweryBeers { get; set; } = new List<BreweryBeerLink>();
+        public ICollection<BreweryBeerLink> BreweryBeers { get; set; } = new List<BreweryBeerLink>();
     }
 }

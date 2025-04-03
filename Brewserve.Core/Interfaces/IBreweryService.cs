@@ -1,15 +1,15 @@
-﻿using Brewserve.Core.Payloads;
+﻿using BrewServe.Core.Payloads;
 
-namespace Brewserve.Core.Interfaces
+namespace BrewServe.Core.Interfaces
 {
     public interface IBreweryService
     {
-       Task<IEnumerable<BreweryResponse>> GetBreweriesAsync();
-       Task<BreweryResponse> GetBreweryByIdAsync(int id);
-       Task<BreweryResponse> AddBreweryAsync(CreateBreweryRequest brewery);
-       Task UpdateBreweryAsync(BreweryRequest brewery);
-       Task<IEnumerable<BreweryResponse>> GetBreweryBeerLinkAsync();
-       Task<BreweryResponse> GetBreweryBeerLinkByBreweryIdAsync(int id);
+        Task<IEnumerable<BreweryResponse>> GetBreweriesAsync();
+        Task<BreweryResponse> GetBreweryByIdAsync(int id);
+        Task<BreweryResponse> AddBreweryAsync(BreweryRequest brewery);
+        Task<BreweryResponse> UpdateBreweryAsync(BreweryRequest brewery);
+        Task<IEnumerable<BreweryBeerLinkResponse>> GetBreweryBeerLinkAsync();
+        Task<BreweryBeerLinkResponse> GetBreweryBeerLinkByBreweryIdAsync(int id);
         Task<BreweryResponse> AddBreweryBeerLinkAsync(BreweryBeerLinkRequest breweryBeer);
     }
 }

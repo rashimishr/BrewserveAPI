@@ -1,4 +1,4 @@
-namespace Brewserve.Tests
+namespace BrewServe.Tests
 {
     public class Tests
     {

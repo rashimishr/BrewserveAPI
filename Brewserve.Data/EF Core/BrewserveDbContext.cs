@@ -1,15 +1,14 @@
-﻿using Brewserve.Data.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.CodeAnalysis;
-using Brewserve.Data.Repositories;
+using BrewServe.Data.Models;
 
-namespace Brewserve.Data.EF_Core
+namespace BrewServeData.EF_Core
 {
     /// <summary>
     /// Represents the database context for the Beer application.
     /// </summary>
-    [ExcludeFromCodeCoverage]   
-    public class BrewserveDbContext(DbContextOptions<BrewserveDbContext> options) : DbContext(options)
+    [ExcludeFromCodeCoverage]
+    public class BrewServeDbContext(DbContextOptions<BrewServeDbContext> options) : DbContext(options)
     {
         /// <summary>
         /// Gets or sets the DbSet of beers.
@@ -59,7 +58,7 @@ namespace Brewserve.Data.EF_Core
 
             modelBuilder.Entity<BreweryBeerLink>()
                 .HasKey(bb => new { bb.BreweryId, bb.BeerId });
-            
+
             modelBuilder.Entity<BreweryBeerLink>()
                 .HasOne(bb => bb.Brewery)
                 .WithMany(b => b.BreweryBeers)

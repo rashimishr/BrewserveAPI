@@ -1,13 +1,15 @@
 ﻿using System.Linq.Expressions;
 
-namespace Brewserve.Data.Interfaces
+namespace BrewServe.Data.Interfaces
 {
     public interface IRepository<TEntity> where TEntity : class
     {
         Task<IEnumerable<TEntity>> GetAllAsync();
-        Task<TEntity> GetByIdAsync(int id);
+        Task<TEntity> GetByIdAsync(int? id);
         Task AddAsync(TEntity entity);
         Task UpdateAsync(TEntity entity);
-        Task SaveAsync(int id);
+
+        Task<IEnumerable<TEntity>> GetAllAssociatedLinkedAsync(
+            params Expression<Func<TEntity, object>>[] includeProperties);
     }
 }

@@ -1,13 +1,14 @@
-﻿using Brewserve.Data.EF_Core;
-using Brewserve.Data.Interfaces;
-using Brewserve.Data.Models;
+﻿using Brewserve.Data.Interfaces;
+using BrewServe.Data.Models;
+using BrewServe.Data.Repositories;
+using BrewServeData.EF_Core;
 using Microsoft.EntityFrameworkCore;
 
 namespace Brewserve.Data.Repositories
 {
     public class BreweryRepository : Repository<Brewery>, IBreweryRepository
     {
-        public BreweryRepository(BrewserveDbContext context) : base(context){}
+        public BreweryRepository(BrewServeDbContext context) : base(context){}
 
         public async Task<IEnumerable<Brewery>> GetBreweriesWithBeersAsync()
         {

@@ -1,14 +1,13 @@
-﻿using Brewserve.Core.Payloads;
-using Brewserve.Data.Models;
+﻿using BrewServe.Core.Payloads;
 
-namespace Brewserve.Core.Interfaces
+namespace BrewServe.Core.Interfaces
 {
     public interface IBeerService
     {
         Task<IEnumerable<BeerResponse>> GetBeersAsync();
         Task<BeerResponse> GetBeerByIdAsync(int id);
-        Task<BeerResponse> AddBeerAsync(CreateBeerRequest beer);
-        Task UpdateBeerAsync(BeerRequest beer);
+        Task<BeerResponse> AddBeerAsync(BeerRequest beer);
+        Task<BeerResponse> UpdateBeerAsync(BeerRequest beer);     
         Task<IEnumerable<BeerResponse>> GetBeersByAlcoholContentAsync(decimal gtAlcoholByVolume, decimal ltAlcoholByVolume);
     }
 }

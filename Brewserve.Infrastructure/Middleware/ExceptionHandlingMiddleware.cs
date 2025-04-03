@@ -3,13 +3,12 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace Brewserve.Infrastructure.Middleware
+namespace BrewServe.Infrastructure.Middleware
 {
     public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
     {
         private readonly RequestDelegate _next = next;
         private readonly ILogger<ExceptionHandlingMiddleware> _logger = logger;
-
         public async Task InvokeAsync(HttpContext context)
         {
             try
@@ -23,7 +22,6 @@ namespace Brewserve.Infrastructure.Middleware
                 await HandleExceptionAsync(context, ex);
             }
         }
-
         private static Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             var response = new { message = "Internal Server Error from the custom middleware." };

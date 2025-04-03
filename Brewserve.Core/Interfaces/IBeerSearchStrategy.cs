@@ -1,10 +1,6 @@
-﻿
-using Brewserve.Core.Payloads;
-using Brewserve.Data.Interfaces;
-using Brewserve.Data.Models;
-using Brewserve.Data.Repositories;
+﻿using BrewServe.Core.Payloads;
 
-namespace Brewserve.Core.Interfaces
+namespace BrewServe.Core.Interfaces
 {
     public interface IBeerSearchStrategy
     {

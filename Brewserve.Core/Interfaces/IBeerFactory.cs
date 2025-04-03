@@ -1,10 +1,9 @@
-﻿using Brewserve.Core.Payloads;
+﻿using BrewServe.Core.Payloads;
 
-namespace Brewserve.Core.Interfaces
+namespace BrewServe.Core.Interfaces
 {
     public interface IBeerFactory
     {
         BeerRequest CreateBeerRequest(string name, decimal percentageAlcoholByVolume);
     }
 }
-    

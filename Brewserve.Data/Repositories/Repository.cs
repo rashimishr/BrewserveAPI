@@ -1,31 +1,33 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
-using Brewserve.Data.EF_Core;
-using Brewserve.Data.Interfaces;
+﻿using System.Linq.Expressions;
+using BrewServe.Data.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using BrewServeData.EF_Core;
 
-namespace Brewserve.Data.Repositories
+namespace BrewServe.Data.Repositories
 {
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {
-        protected readonly BrewserveDbContext _context;
+        protected readonly BrewServeDbContext _context;
         private readonly DbSet<TEntity> _dbSet;
 
-        public Repository(BrewserveDbContext context)
+        public Repository(BrewServeDbContext context)
         {
             _context = context;
             _dbSet = context.Set<TEntity>();
         }
 
         public async Task<IEnumerable<TEntity>> GetAllAsync() => await _dbSet.ToListAsync();
-
-        public async Task<TEntity> GetByIdAsync(int id) => await _dbSet.FindAsync(id);
+        public async Task<TEntity> GetByIdAsync(int? id) => await _dbSet.FindAsync(id);
         public async Task AddAsync(TEntity entity) => await _dbSet.AddAsync(entity);
-        public async Task UpdateAsync(TEntity entity) =>  _dbSet.Update(entity);
-        public async Task SaveAsync(int id) => await _context.SaveChangesAsync();
-
-        public async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate)
+        public async Task UpdateAsync(TEntity entity) => _dbSet.Update(entity);
+        public async Task<IEnumerable<TEntity>> GetAllAssociatedLinkedAsync(params Expression<Func<TEntity, object>>[] includeProperties)
         {
-            return await _dbSet.Where(predicate).ToListAsync();
+            IQueryable<TEntity> query = _dbSet;
+            foreach (var includeProperty in includeProperties)
+            {
+                query = query.Include(includeProperty);
+            }
+            return await query.ToListAsync();
         }
     }
 }

@@ -1,18 +1,12 @@
-﻿
-using Brewserve.Data.Models;
+﻿using System.Text.Json.Serialization;
 
-namespace Brewserve.Core.Payloads
+namespace BrewServe.Core.Payloads
 {
-    public class CreateBeerRequest
+ public class BeerRequest
     {
+        [JsonIgnore]
+        public int? Id { get; set; }
         public string Name { get; set; }
         public decimal PercentageAlcoholByVolume { get; set; }
-    }
-    public class BeerRequest
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public decimal PercentageAlcoholByVolume { get; set; }
-        public List<BreweryRequest> Breweries { get; set; }
     }
 }

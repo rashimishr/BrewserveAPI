@@ -1,18 +1,16 @@
-﻿using Brewserve.Core.Payloads;
-using Brewserve.Core.Interfaces;
-using Brewserve.Core.Services;
-using Brewserve.Data.Models;
+﻿using BrewServe.Core.Constants;
+using BrewServe.Core.Interfaces;
+using BrewServe.Core.Payloads;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
-namespace Brewserve.API.Controllers
+namespace BrewServe.API.Controllers
 {
     /// <summary>
     /// Controller for managing bars.
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
-    public class BarController:ControllerBase
+    public class BarController : ControllerBase
     {
         private readonly IBarService _barService;
         private readonly ILogger<BarController> _logger;
@@ -33,8 +31,7 @@ namespace Brewserve.API.Controllers
         /// </summary>
         /// <returns>A list of all bars.</returns>
         [HttpGet]
-        [ProducesResponseType(typeof(ApiResponse<IEnumerable<BarResponse>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<BarResponse>), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(BarResponse), StatusCodes.Status200OK)]
         public async Task<ActionResult> GetBarsAsync()
         {
             _logger.LogInformation("Fetching all bars");
@@ -44,28 +41,27 @@ namespace Brewserve.API.Controllers
                 var errorResponse = new ApiResponse<BarResponse>("Bar not found");
                 return Ok(errorResponse);
             }
-            
+
             var response = new ApiResponse<IEnumerable<BarResponse>>(bars);
             return Ok(response);
         }
 
         /// <summary>
-        /// Get bar by Id
+        /// Get bar by id
         /// </summary>
         /// <param name="id">The ID of the bar to retrieve.</param>
         /// <returns>The bar details.</returns>
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(ApiResponse<BarResponse>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<BarResponse>), StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<BarResponse>> GetBarByIdAsync(int id)
+        [ProducesResponseType(typeof(BarResponse), StatusCodes.Status200OK)]
+       public async Task<ActionResult<BarResponse>> GetBarByIdAsync(int id)
         {
             var bar = await _barService.GetBarByIdAsync(id);
             if (bar == null)
             {
-                var errorResponse = new ApiResponse<BarResponse>("Bar not found");
+                var errorResponse = new ApiResponse<BarResponse>(Messages.RecordNotFound("Bar"));
                 return Ok(errorResponse);
             }
-            var response = new ApiResponse<BarResponse>(bar, "Request Successful");
+            var response = new ApiResponse<BarResponse>(bar);
             return Ok(response);
         }
 
@@ -77,7 +73,7 @@ namespace Brewserve.API.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(ApiResponse<BarResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<BarResponse>), StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<BarResponse>> AddBarAsync(CreateBarRequest bar)
+        public async Task<ActionResult<BarResponse>> AddBarAsync(BarRequest bar)
         {
             if (!ModelState.IsValid)
             {
@@ -89,7 +85,7 @@ namespace Brewserve.API.Controllers
             var savedBar = await _barService.AddBarAsync(bar);
             if (savedBar == null)
             {
-                var errorResponse = new ApiResponse<BarResponse>("Record already exists");
+                var errorResponse = new ApiResponse<BarResponse>(Messages.RecordAlreadyExists("Bar"));
                 return BadRequest(errorResponse);
             }
             var response = new ApiResponse<BarResponse>(savedBar);
@@ -98,7 +94,7 @@ namespace Brewserve.API.Controllers
         }
 
         /// <summary>
-        /// Update a bar by Id
+        /// Update a bar by id
         /// </summary>
         /// <param name="id">The ID of the bar to update.</param>
         /// <param name="bar">The updated bar details.</param>
@@ -115,9 +111,9 @@ namespace Brewserve.API.Controllers
 
                 return BadRequest(errorResponse);
             }
+            bar.Id = id;
             await _barService.UpdateBarAsync(bar);
-            var response = new ApiResponse<BarResponse>("${barId} updated successfully");
-
+            var response = new ApiResponse<BarResponse>(Messages.RecordUpdated("Bar",id));
             return Ok(response);
         }
 
@@ -128,7 +124,7 @@ namespace Brewserve.API.Controllers
         /// <returns>A response indicating the result of the operation.</returns>
         [HttpPost("beer")]
         [ProducesResponseType(typeof(ApiResponse<BarResponse>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<List<string>>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<BarResponse>), StatusCodes.Status400BadRequest)]
         public async Task<ActionResult> AddBarBeerLinkAsync(BarBeerLinkRequest linkRequest)
         {
             if (!ModelState.IsValid)
@@ -138,9 +134,49 @@ namespace Brewserve.API.Controllers
 
                 return BadRequest(errorResponse);
             }
-            var savedLink = await _barService.AddBarBeerLinkAsync(linkRequest);
+            var link = await _barService.AddBarBeerLinkAsync(linkRequest);
+            var response = new ApiResponse<BarResponse>(link);
+            return Ok(response);
+        }
 
-            return Ok();
+        /// <summary>
+        /// Get all bars with associated beers
+        /// </summary>
+        /// <returns>A list of all bars.</returns>
+        [HttpGet("beer")]
+        [ProducesResponseType(typeof(ApiResponse<BarBeerLinkResponse>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<BarBeerLinkResponse>>> GetAssociatedBarBeersAsync()
+        {
+            _logger.LogInformation("Fetching all bars and associated beers");
+            var link = await _barService.GetBarBeerLinkAsync();
+
+            if (link == null || !link.Any())
+            {
+                var errorResponse = new ApiResponse<IEnumerable<BarBeerLinkResponse>>([], Messages.RecordNotFound("Bar"));
+                return Ok(errorResponse);
+            }
+            var response = new ApiResponse<IEnumerable<BarBeerLinkResponse>>(link);
+
+            return Ok(response);
+        }
+        
+        /// <summary>
+        /// Get a single bar by id with associated beers
+        /// </summary>
+        /// <param name="barId">The ID of the bars to retrieve.</param>
+        /// <returns>The bar beer link details.</returns>
+        [HttpGet("{barId}/beer")]
+        [ProducesResponseType(typeof(ApiResponse<BarBeerLinkResponse>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<BarBeerLinkResponse>> GetAssociatedBarBeerByBarIdAsync(int barId)
+        {
+            var link = await _barService.GetBarBeerLinkByBarIdAsync(barId);
+            if (link == null)
+            {
+                var errorResponse = new ApiResponse<IEnumerable<BarBeerLinkResponse>>(null, Messages.RecordNotFound("Bar"));
+                return Ok(errorResponse);
+            }
+            var response = new ApiResponse<BarBeerLinkResponse>(link);
+            return Ok(response);
         }
     }
 }

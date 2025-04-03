@@ -1,13 +1,13 @@
-﻿using Brewserve.Data.EF_Core;
-using Brewserve.Data.Interfaces;
-using Brewserve.Data.Models;
+﻿using BrewServe.Data.Interfaces;
+using BrewServe.Data.Models;
+using BrewServeData.EF_Core;
 using Microsoft.EntityFrameworkCore;
 
-namespace Brewserve.Data.Repositories
+namespace BrewServe.Data.Repositories
 {
     public class BreweryBeersLinkRepository : Repository<BreweryBeerLink>, IBreweryBeersLinkRepository
     {
-        public BreweryBeersLinkRepository(BrewserveDbContext context) : base(context) { }
+        public BreweryBeersLinkRepository(BrewServeDbContext context) : base(context) { }
         public async Task<IEnumerable<Brewery>> GetAssociatedBreweryBeersAsync()
         {
             return await _context.Breweries
@@ -18,6 +18,7 @@ namespace Brewserve.Data.Repositories
         public async Task<IEnumerable<Brewery>> GetAssociatedBreweryBeersByBreweryIdAsync(int breweryId)
         {
             return await _context.BreweryBeers
+                .Include(b => b.Beer)
                 .Where(bbl => bbl.BreweryId == breweryId)
                 .Select(bbl => bbl.Brewery)
                 .ToListAsync();

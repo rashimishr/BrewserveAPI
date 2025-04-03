@@ -1,18 +1,20 @@
 using System.Reflection;
-using System.Runtime.Intrinsics;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Text.Json.Serialization;
-using Brewserve.Core.Factories;
-using Brewserve.Core.Interfaces;
-using Brewserve.Data.EF_Core;
-using Brewserve.Core.Services;
-using Brewserve.Core.Strategies;
-using Brewserve.Data.Interfaces;
-using Brewserve.Data.Repositories;
+using BrewServeData.EF_Core;
 using Microsoft.OpenApi.Models;
 using AutoMapper;
-using Brewserve.Core.Mapping;
+using BrewServe.Infrastructure.Middleware;
+using BrewServe.Core.Factories;
+using BrewServe.Core.Interfaces;
+using BrewServe.Core.Mapping;
+using BrewServe.Core.Services;
+using BrewServe.Core.Strategies;
+using Brewserve.Data.Interfaces;
+using BrewServe.Data.Interfaces;
+using Brewserve.Data.Repositories;
+using BrewServe.Data.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +27,6 @@ IMapper mapper = mapperConfig.CreateMapper();
 mapperConfig.AssertConfigurationIsValid();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-//builder.Services.AddAutoMapper((typeof(Program)));
 builder.Services.AddTransient<BeerByAlcoholContentStrategy>();
 
 //configure serilog from app settings
@@ -43,7 +44,7 @@ builder.Services.AddControllers()
 
 //configuration for db
 builder.Services.AddScoped<BeerSearchContext>();
-builder.Services.AddDbContext<BrewserveDbContext>(options =>
+builder.Services.AddDbContext<BrewServeDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")),
     ServiceLifetime.Scoped);
 
@@ -57,14 +58,12 @@ builder.Services.AddScoped<IBeerService, BeerService>();
 builder.Services.AddScoped<IBarService, BarService>();
 builder.Services.AddScoped<IBreweryService, BreweryService>();
 
-
-
 // Add services to the container.
 builder.Services.AddScoped<IBeerSearchStrategy, BeerByAlcoholContentStrategy>();
 builder.Services.AddScoped<BeerSearchContext>();
 builder.Services.AddScoped<IBeerFactory, BeerFactory>();
 builder.Services.AddScoped<IBarFactory, BarFactory>();
-builder.Services.AddScoped<IBreweryFactory, Breweryfactory>();
+builder.Services.AddScoped<IBreweryFactory, BreweryFactory>();
 
 //dd logging
 builder.Host.UseSerilog();
@@ -72,9 +71,9 @@ builder.Host.UseSerilog();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c=> 
-    {
-        c.SwaggerDoc("v1", new OpenApiInfo{ Title = "Brewserve API", Version = "v1"});
+builder.Services.AddSwaggerGen(c =>
+{
+        c.SwaggerDoc("v1", new OpenApiInfo { Title = "BrewServe API", Version = "v1" });
         var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
         var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
         c.IncludeXmlComments(xmlPath);
@@ -82,13 +81,13 @@ builder.Services.AddSwaggerGen(c=>
 
 var app = builder.Build();
 // Add Middleware
-app.UseMiddleware<Brewserve.API.Middleware.ExceptionHandlingMiddleware>();
-app.UseMiddleware<Brewserve.API.Middleware.LoggingMiddleware>();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseMiddleware<LoggingMiddleware>();
 
 //automatically create database
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<BrewserveDbContext>();
+    var dbContext = scope.ServiceProvider.GetRequiredService<BrewServeDbContext>();
     dbContext.Database.EnsureCreated();
 }
 

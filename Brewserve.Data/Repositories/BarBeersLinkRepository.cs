@@ -1,14 +1,13 @@
-﻿using Brewserve.Data.EF_Core;
-using Brewserve.Data.Interfaces;
-using Brewserve.Data.Models;
+﻿using BrewServe.Data.Interfaces;
+using BrewServe.Data.Models;
+using BrewServeData.EF_Core;
 using Microsoft.EntityFrameworkCore;
 
-namespace Brewserve.Data.Repositories
+namespace BrewServe.Data.Repositories
 {
     public class BarBeersLinkRepository : Repository<BarBeerLink>, IBarBeersLinkRepository
     {
-        public BarBeersLinkRepository(BrewserveDbContext context) : base(context) { }
-
+        public BarBeersLinkRepository(BrewServeDbContext context) : base(context) { }
         public async Task<IEnumerable<Bar>> GetAssociatedBarBeersAsync()
         {
             return await _context.Bars
@@ -16,7 +15,6 @@ namespace Brewserve.Data.Repositories
                 .ThenInclude(bb => bb.Beer)
                 .ToListAsync();
         }
-
         public async Task<IEnumerable<Bar>> GetAssociatedBarBeersByBarIdAsync(int barId)
         {
             return await _context.BarBeers

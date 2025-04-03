@@ -1,15 +1,15 @@
-﻿using Brewserve.Core.Payloads;
+﻿using BrewServe.Core.Payloads;
 
-namespace Brewserve.Core.Interfaces
+namespace BrewServe.Core.Interfaces
 {
-    public  interface IBarService
+    public interface IBarService
     {
         Task<IEnumerable<BarResponse>> GetBarsAsync();
         Task<BarResponse> GetBarByIdAsync(int id);
-        Task<BarResponse> AddBarAsync(CreateBarRequest bar);
-        Task UpdateBarAsync(BarRequest bar);
-        Task<IEnumerable<BarResponse>> GetBarBeerLinkAsync();
-        Task<BarResponse> GetBarBeerLinkByBarIdAsync(int id);
+        Task<BarResponse> AddBarAsync(BarRequest bar);
+        Task<BarResponse> UpdateBarAsync(BarRequest bar);
+        Task<IEnumerable<BarBeerLinkResponse>> GetBarBeerLinkAsync();
+        Task<BarBeerLinkResponse> GetBarBeerLinkByBarIdAsync(int id);
         Task<BarResponse> AddBarBeerLinkAsync(BarBeerLinkRequest barBeer);
     }
 }

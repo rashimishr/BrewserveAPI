@@ -1,10 +1,10 @@
-﻿using Brewserve.Core.Payloads;
-using Brewserve.Core.Interfaces;
-using Brewserve.Core.Strategies;
+﻿using BrewServe.Core.Constants;
+using BrewServe.Core.Interfaces;
+using BrewServe.Core.Payloads;
+using BrewServe.Core.Strategies;
 using Microsoft.AspNetCore.Mvc;
-using Brewserve.Data.Models;
 
-namespace Brewserve.API.Controllers
+namespace BrewServe.API.Controllers
 {
     /// <summary>
     /// Controller for managing beers.
@@ -40,20 +40,19 @@ namespace Brewserve.API.Controllers
         /// <response code="400">Bad Request</response>
         [HttpGet]
         [ProducesResponseType(typeof(BeerResponse), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> GetBeers([FromQuery] decimal gtAlcoholByVolume , [FromQuery] decimal ltAlcoholByVolume)
+        public async Task<ActionResult> GetBeers([FromQuery] decimal? gtAlcoholByVolume, [FromQuery] decimal? ltAlcoholByVolume)
         {
+            _logger.LogInformation("Fetching beer with filter");
             if (gtAlcoholByVolume <= 0 || ltAlcoholByVolume <= 0)
             {
-                return BadRequest(new  ApiResponse<List<BeerResponse>>("Alcohol content must be greater than 0"));
+                return BadRequest(new ApiResponse<List<BeerResponse>>("Alcohol content must be greater than 0"));
             }
             //set the strategy
             _strategy.SetAlcoholContent(gtAlcoholByVolume, ltAlcoholByVolume);
             var beers = await _strategy.FilterAsync();
-
             if (!beers.Any() || beers == null)
             {
-                var errorResponse = new ApiResponse<BarResponse>($"No beer found with alcohol content >={ gtAlcoholByVolume } <= { ltAlcoholByVolume}");
+                var errorResponse = new ApiResponse<BarResponse>("No record found");
                 return Ok(errorResponse);
             }
             var response = new ApiResponse<IEnumerable<BeerResponse>>(beers);
@@ -67,13 +66,12 @@ namespace Brewserve.API.Controllers
         /// <returns>The beer details.</returns>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(ApiResponse<BeerResponse>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<BeerResponse>), StatusCodes.Status404NotFound)]
         public async Task<ActionResult<BeerResponse>> GetBeerByIdAsync(int id)
         {
             var beer = await _beerService.GetBeerByIdAsync(id);
             if (beer == null)
             {
-                var errorResponse = new ApiResponse<BeerResponse>("Beer not found");
+                var errorResponse = new ApiResponse<BeerResponse>(Messages.RecordNotFound("Beer"));
                 return Ok(errorResponse);
             }
             var response = new ApiResponse<BeerResponse>(beer);
@@ -88,7 +86,7 @@ namespace Brewserve.API.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(ApiResponse<BeerResponse>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse<BeerResponse>), StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<BeerResponse>> AddBeerAsync(CreateBeerRequest beer)
+        public async Task<ActionResult<BeerResponse>> AddBeerAsync(BeerRequest beer)
         {
             if (!ModelState.IsValid)
             {
@@ -104,12 +102,11 @@ namespace Brewserve.API.Controllers
                 return BadRequest(errorResponse);
             }
             var response = new ApiResponse<BeerResponse>(savedBeer);
-
             return Ok(response);
         }
 
         /// <summary>
-        /// Update a beer by Id
+        /// Update a beer by id
         /// </summary>
         /// <param name="id">The ID of the beer to update.</param>
         /// <param name="beer">The updated beer details.</param>
@@ -125,11 +122,10 @@ namespace Brewserve.API.Controllers
                 var errorResponse = new ApiResponse<IEnumerable<BarResponse>>(errors);
 
                 return BadRequest(errorResponse);
-            } 
-            await _beerService.UpdateBeerAsync(beer);
-
-            var response = new ApiResponse<BarResponse>("${beerId} updated successfully");
-
+            }
+            beer.Id = id;
+            var updatedBeer = await _beerService.UpdateBeerAsync(beer);
+            var response = new ApiResponse<BeerResponse>(updatedBeer, Messages.RecordUpdated("Beer", id));
             return Ok(response);
         }
     }

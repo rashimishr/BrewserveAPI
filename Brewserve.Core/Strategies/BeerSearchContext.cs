@@ -1,13 +1,11 @@
-﻿using Brewserve.Core.Payloads;
-using Brewserve.Core.Interfaces;
-using Brewserve.Data.Interfaces;
-using Brewserve.Data.Models;
+﻿using BrewServe.Core.Interfaces;
+using BrewServe.Core.Payloads;
 
-namespace Brewserve.Core.Strategies
+namespace BrewServe.Core.Strategies
 {
     public class BeerSearchContext
     {
-        private IBeerSearchStrategy _strategy;
+        private IBeerSearchStrategy? _strategy;
 
         public void SetStrategy(IBeerSearchStrategy strategy)
         {
@@ -16,7 +14,7 @@ namespace Brewserve.Core.Strategies
 
         public async Task<IEnumerable<BeerResponse>> FilterAsync()
         {
-            if(_strategy == null)
+            if (_strategy == null)
             {
                 throw new InvalidOperationException("Strategy not set");
             }

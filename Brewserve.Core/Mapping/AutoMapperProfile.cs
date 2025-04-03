@@ -1,58 +1,63 @@
-﻿using System.IO.Compression;
-using AutoMapper;
-using Brewserve.Data.Models;
-using Brewserve.Core.Payloads;
+﻿using AutoMapper;
+using BrewServe.Core.Payloads;
+using BrewServe.Data.Models;
 
-namespace Brewserve.Core.Mapping
+namespace BrewServe.Core.Mapping
 {
     public class AutoMapperProfile : Profile
     {
         public AutoMapperProfile()
         {
             //Bar Mapping
-            CreateMap<CreateBarRequest, Bar>()
+            CreateMap<BarRequest, Bar>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
-                .ForMember(dest => dest.BarBeers, opt=>opt.Ignore()); // Ignore if it's not part of CreateBarRequest
-            CreateMap<Bar, BarRequest>()
-                .ForMember(dest => dest.Beers, opt => opt.MapFrom(src => src.BarBeers.Select(bb => new BeerRequest
-                {
-                    Id = bb.Beer.Id,
-                    Name = bb.Beer.Name,
-                    PercentageAlcoholByVolume = bb.Beer.PercentageAlcoholByVolume,
-                }).ToList()));
+                .ForMember(dest => dest.BarBeers, opt => opt.Ignore()) // Ignore if it's not part of CreateBarRequest
+                .ReverseMap();
+            //CreateMap<Bar, BarRequest>()
+            //    .ForMember(dest => dest.Beers, opt => opt.MapFrom(src => src.BarBeers.Select(bb => new BeerRequest
+            //    {
+            //        Id = bb.Beer.Id,
+            //        Name = bb.Beer.Name,
+            //        PercentageAlcoholByVolume = bb.Beer.PercentageAlcoholByVolume,
+            //    }).ToList()));
             CreateMap<Bar, BarResponse>().ReverseMap();
 
             // Beer Mappings
-            CreateMap<CreateBeerRequest, Beer>()
+            CreateMap<BeerRequest, Beer>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.BarBeers, opt => opt.Ignore())
-                .ForMember(dest => dest.BreweryBeers, opt => opt.Ignore()); // Ignore if it's not part of CreateBeerRequest
-            CreateMap<Beer, BeerRequest>()
-                .ForMember(dest => dest.Breweries, opt => opt.MapFrom(src => src.BreweryBeers.Select(bb => new BreweryRequest
-                {
-                    Id = bb.Brewery.Id,
-                    Name = bb.Brewery.Name,
-                }).ToList()));
+                .ForMember(dest => dest.BreweryBeers,
+                    opt => opt.Ignore()) // Ignore if it's not part of CreateBeerRequest
+                .ReverseMap();
+            //CreateMap<Beer, BeerRequest>()
+            //    .ForMember(dest => dest.Breweries, opt => opt.MapFrom(src => src.BreweryBeers.Select(bb => new BreweryRequest
+            //    {
+            //        Id = bb.Brewery.Id,
+            //        Name = bb.Brewery.Name,
+            //    }).ToList()));
             CreateMap<Beer, BeerResponse>().ReverseMap();
 
             // Brewery Mappings
-            CreateMap<CreateBreweryRequest, Brewery>()
+            CreateMap<BreweryRequest, Brewery>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
-                .ForMember(dest => dest.BreweryBeers, opt => opt.Ignore()); //Ignore if it's not part 
-            CreateMap<Brewery, BreweryRequest>()
-                .ForMember(dest => dest.Beers, opt => opt.MapFrom(src => src.BreweryBeers.Select(bb => new BeerRequest
-                {
-                    Id = bb.Beer.Id,
-                    Name = bb.Beer.Name,
-                    PercentageAlcoholByVolume = bb.Beer.PercentageAlcoholByVolume,
-                }).ToList()))
+                .ForMember(dest => dest.BreweryBeers, opt => opt.Ignore()) //Ignore if it's not part 
                 .ReverseMap();
-            CreateMap<Brewery, BreweryResponse>().ReverseMap();
+            //CreateMap<Brewery, BreweryRequest>()
+            //    .ForMember(dest => dest.Beers, opt => opt.MapFrom(src => src.BreweryBeers.Select(bb => new BeerRequest
+            //    {
+            //        Id = bb.Beer.Id,
+            //        Name = bb.Beer.Name,
+            //        PercentageAlcoholByVolume = bb.Beer.PercentageAlcoholByVolume,
+            //    }).ToList()))
+            //    .ReverseMap();
+            CreateMap<Brewery, BreweryResponse>();
 
             // BarBeerLink Mappings
-            CreateMap<BarBeerLink, BarBeerLinkRequest>().ReverseMap();
+            CreateMap<BarBeerLink, BarBeerLinkRequest>();
             // BreweryBeerLink Mappings
-            CreateMap<BreweryBeerLink, BreweryBeerLinkRequest>().ReverseMap();
+            CreateMap<BreweryBeerLink, BreweryBeerLinkRequest>();
+
+
         }
     }
 }
