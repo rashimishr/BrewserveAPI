@@ -2,15 +2,10 @@
 using BrewServe.Data.Models;
 using BrewServeData.EF_Core;
 using Microsoft.EntityFrameworkCore;
-
 namespace BrewServe.Data.Repositories;
-
 public class BeerRepository : Repository<Beer>, IBeerRepository
 {
-    public BeerRepository(BrewServeDbContext context) : base(context)
-    {
-    }
-
+    public BeerRepository(BrewServeDbContext context) : base(context){}
     public async Task<IEnumerable<Beer>> GetBeersByAlcoholContentAsync(decimal? gtAlcoholContent,
         decimal? ltAlcoholContent)
     {

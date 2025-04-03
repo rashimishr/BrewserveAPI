@@ -20,12 +20,13 @@ public class ExceptionHandlingMiddleware(RequestDelegate next, ILogger<Exception
         {
             _logger.LogError(ex, $"An unhandled exception has occurred: {ex}");
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-            await HandleExceptionAsync(context, ex);
+            await HandleExceptionAsync(context, ex, _logger);
         }
     }
 
-    private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+    private static Task HandleExceptionAsync(HttpContext context, Exception exception, ILogger logger)
     {
+        logger.LogError(exception, "An unhandled exception occurred.");
         var response = new { message = "Internal Server Error from the custom middleware." };
         var payload = JsonSerializer.Serialize(response);
         context.Response.ContentType = "application/json";

@@ -2,9 +2,7 @@
 using BrewServe.Core.Interfaces;
 using BrewServe.Core.Payloads;
 using Microsoft.AspNetCore.Mvc;
-
 namespace BrewServe.API.Controllers;
-
 /// <summary>
 ///     Controller for managing bars.
 /// </summary>
@@ -25,7 +23,6 @@ public class BarController : ControllerBase
         _barService = barService;
         _logger = logger;
     }
-
     /// <summary>
     ///     Get all bars
     /// </summary>
@@ -41,11 +38,9 @@ public class BarController : ControllerBase
             var errorResponse = new ApiResponse<BarResponse>("Bar not found");
             return Ok(errorResponse);
         }
-
         var response = new ApiResponse<IEnumerable<BarResponse>>(bars);
         return Ok(response);
     }
-
     /// <summary>
     ///     Get bar by id
     /// </summary>
@@ -62,11 +57,9 @@ public class BarController : ControllerBase
             var errorResponse = new ApiResponse<BarResponse>(Messages.RecordNotFound("Bar"));
             return Ok(errorResponse);
         }
-
         var response = new ApiResponse<BarResponse>(bar);
         return Ok(response);
     }
-
     /// <summary>
     ///     Insert a single bar
     /// </summary>
@@ -84,7 +77,6 @@ public class BarController : ControllerBase
             _logger.LogError("Error occured while adding bar validation");
             return BadRequest(errorResponse);
         }
-
         _logger.LogInformation("Adding a new bar");
         var savedBar = await _barService.AddBarAsync(bar);
         if (savedBar == null)
@@ -92,11 +84,9 @@ public class BarController : ControllerBase
             var errorResponse = new ApiResponse<BarResponse>(Messages.RecordAlreadyExists("Bar"));
             return BadRequest(errorResponse);
         }
-
         var response = new ApiResponse<BarResponse>(savedBar);
         return Ok(response);
     }
-
     /// <summary>
     ///     Update a bar by id
     /// </summary>
@@ -115,14 +105,12 @@ public class BarController : ControllerBase
             _logger.LogError("Error occured while updating bar validation");
             return BadRequest(errorResponse);
         }
-
         _logger.LogInformation("Updating bar with ID {BarId}", id);
         bar.Id = id;
         await _barService.UpdateBarAsync(bar);
         var response = new ApiResponse<BarResponse>(Messages.RecordUpdated("Bar", id));
         return Ok(response);
     }
-
     /// <summary>
     ///     Insert a single bar beer link
     /// </summary>
@@ -140,13 +128,11 @@ public class BarController : ControllerBase
             _logger.LogError("Error occured while adding beer-bar link validation");
             return BadRequest(errorResponse);
         }
-
         _logger.LogInformation("Adding a new bar beer link");
         var link = await _barService.AddBarBeerLinkAsync(linkRequest);
         var response = new ApiResponse<BarResponse>(link);
         return Ok(response);
     }
-
     /// <summary>
     ///     Get all bars with associated beers
     /// </summary>
@@ -163,11 +149,9 @@ public class BarController : ControllerBase
             _logger.LogError("Error occured while fetching all beer-bar link validation");
             return Ok(errorResponse);
         }
-
         var response = new ApiResponse<IEnumerable<BarBeerLinkResponse>>(link);
         return Ok(response);
     }
-
     /// <summary>
     ///     Get a single bar by id with associated beers
     /// </summary>
@@ -184,7 +168,6 @@ public class BarController : ControllerBase
             _logger.LogError("Error occured while fetching beer-bar link validation for bar {BarId}");
             return Ok(errorResponse);
         }
-
         _logger.LogInformation("Fetching bar beer link for bar ID {BarId}", barId);
         var response = new ApiResponse<BarBeerLinkResponse>(link);
         return Ok(response);

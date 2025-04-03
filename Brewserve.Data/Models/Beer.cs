@@ -1,7 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-
 namespace BrewServe.Data.Models;
-
 [ExcludeFromCodeCoverage]
 public class Beer
 {

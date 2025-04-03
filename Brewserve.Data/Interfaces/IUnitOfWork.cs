@@ -1,7 +1,5 @@
 ﻿using Brewserve.Data.Interfaces;
-
 namespace BrewServe.Data.Interfaces;
-
 public interface IUnitOfWork : IDisposable
 {
     IBarRepository Bars { get; }

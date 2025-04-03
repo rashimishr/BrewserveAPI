@@ -1,7 +1,5 @@
 ﻿using System.Text.Json.Serialization;
-
 namespace BrewServe.Core.Payloads;
-
 public class BeerRequest
 {
     [JsonIgnore]

@@ -2,9 +2,7 @@
 using BrewServe.Core.Interfaces;
 using BrewServe.Core.Payloads;
 using Microsoft.AspNetCore.Mvc;
-
 namespace BrewServe.API.Controllers;
-
 /// <summary>
 ///     Controller for managing beers.
 /// </summary>
@@ -14,7 +12,6 @@ public class BreweryController : ControllerBase
 {
     private readonly IBreweryService _breweryService;
     private readonly ILogger<BreweryController> _logger;
-
     /// <summary>
     ///     Initializes a new instance of the "BreweryController"/> class.
     /// </summary>
@@ -25,7 +22,6 @@ public class BreweryController : ControllerBase
         _breweryService = breweryService;
         _logger = logger;
     }
-
     /// <summary>
     ///     Get all breweries
     /// </summary>
@@ -42,11 +38,9 @@ public class BreweryController : ControllerBase
                 new ApiResponse<IEnumerable<BreweryResponse>>(Enumerable.Empty<BreweryResponse>(), "Brewery not found");
             return Ok(errorResponse);
         }
-
         var response = new ApiResponse<IEnumerable<BreweryResponse>>(breweries);
         return Ok(response);
     }
-
     /// <summary>
     ///     Get brewery by id
     /// </summary>
@@ -64,11 +58,9 @@ public class BreweryController : ControllerBase
             _logger.LogError("Brewery with ID {BreweryId} not found", id);
             return Ok(errorResponse);
         }
-
         var response = new ApiResponse<BreweryResponse>(brewery);
         return Ok(response);
     }
-
     /// <summary>
     ///     Insert a single brewery
     /// </summary>
@@ -86,19 +78,16 @@ public class BreweryController : ControllerBase
             _logger.LogError("Invalid brewery data: {Errors}", errors);
             return BadRequest(errorResponse);
         }
-
         var savedBrewery = await _breweryService.AddBreweryAsync(brewery);
         if (savedBrewery == null)
         {
             var errorResponse = new ApiResponse<BreweryResponse>(Messages.RecordAlreadyExists("Brewery"));
             return BadRequest(errorResponse);
         }
-
         _logger.LogInformation("Brewery added successfully");
         var response = new ApiResponse<BreweryResponse>(savedBrewery);
         return Ok(response);
     }
-
     /// <summary>
     ///     Update a brewery by id
     /// </summary>
@@ -117,14 +106,12 @@ public class BreweryController : ControllerBase
             _logger.LogError("Invalid brewery data: {Errors}", errors);
             return BadRequest(errorResponse);
         }
-
         _logger.LogInformation("Updating brewery with ID {BreweryId}", id);
         brewery.Id = id;
         var updatedBrewery = await _breweryService.UpdateBreweryAsync(brewery);
         var response = new ApiResponse<BreweryResponse>(updatedBrewery, Messages.RecordUpdated("Brewery", id));
         return Ok(response);
     }
-
     /// <summary>
     ///     Insert a single brewery beer link
     /// </summary>
@@ -142,13 +129,11 @@ public class BreweryController : ControllerBase
             _logger.LogError("Invalid brewery beer link data: {Errors}", errors);
             return BadRequest(errorResponse);
         }
-
         _logger.LogInformation("Adding a new brewery beer link");
         var link = await _breweryService.AddBreweryBeerLinkAsync(linkRequest);
         var response = new ApiResponse<BreweryResponse>(link);
         return Ok(response);
     }
-
     /// <summary>
     ///     Get all breweries with associated beers
     /// </summary>
@@ -166,11 +151,9 @@ public class BreweryController : ControllerBase
             _logger.LogError("No breweries found with associated beers");
             return Ok(errorResponse);
         }
-
         var response = new ApiResponse<IEnumerable<BreweryBeerLinkResponse>>(link);
         return Ok(response);
     }
-
     /// <summary>
     ///     Get a single brewery by id with associated beers
     /// </summary>
@@ -188,7 +171,6 @@ public class BreweryController : ControllerBase
             _logger.LogError("Brewery beer link with ID {BreweryId} not found", breweryId);
             return Ok(errorResponse);
         }
-
         var response = new ApiResponse<BreweryBeerLinkResponse>(link);
         return Ok(response);
     }

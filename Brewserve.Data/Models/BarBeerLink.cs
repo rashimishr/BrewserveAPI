@@ -1,5 +1,4 @@
 ﻿namespace BrewServe.Data.Models;
-
 public class BarBeerLink
 {
     public int BarId { get; set; }

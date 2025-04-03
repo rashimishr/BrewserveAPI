@@ -1,7 +1,5 @@
 ﻿using BrewServe.Core.Payloads;
-
 namespace BrewServe.Core.Interfaces;
-
 public interface IBeerService
 {
     Task<IEnumerable<BeerResponse>> GetBeersAsync();

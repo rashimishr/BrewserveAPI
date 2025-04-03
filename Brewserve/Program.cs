@@ -25,7 +25,7 @@ builder.Services.AddSingleton(mapper);
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<BeerByAlcoholContentStrategy>();
 
-//configure serilog from app settings
+// Configure serilog from app settings
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .CreateLogger();
@@ -37,7 +37,7 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
 
-//configuration for db
+// Register for db context
 builder.Services.AddScoped<BeerSearchContext>();
 builder.Services.AddDbContext<BrewServeDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -51,12 +51,10 @@ builder.Services.AddScoped<IBreweryRepository, BreweryRepository>();
 builder.Services.AddScoped<IBeerService, BeerService>();
 builder.Services.AddScoped<IBarService, BarService>();
 builder.Services.AddScoped<IBreweryService, BreweryService>();
-
-// Add services to the container.
 builder.Services.AddScoped<IBeerSearchStrategy, BeerByAlcoholContentStrategy>();
 builder.Services.AddScoped<BeerSearchContext>();
 
-//dd logging
+// Register Logging
 builder.Host.UseSerilog();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -73,7 +71,7 @@ var app = builder.Build();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<LoggingMiddleware>();
 
-//automatically create database
+// Create database
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<BrewServeDbContext>();

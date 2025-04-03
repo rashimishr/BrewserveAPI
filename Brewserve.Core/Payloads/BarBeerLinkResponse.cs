@@ -1,5 +1,4 @@
 ﻿namespace BrewServe.Core.Payloads;
-
 public class BarBeerLinkResponse
 {
     public int Id { get; set; }

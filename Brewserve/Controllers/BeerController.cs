@@ -3,7 +3,6 @@ using BrewServe.Core.Interfaces;
 using BrewServe.Core.Payloads;
 using BrewServe.Core.Strategies;
 using Microsoft.AspNetCore.Mvc;
-
 namespace BrewServe.API.Controllers
 {
     /// <summary>
@@ -16,7 +15,6 @@ namespace BrewServe.API.Controllers
         private readonly IBeerService _beerService;
         private readonly BeerByAlcoholContentStrategy _strategy;
         private readonly ILogger<BarController> _logger;
-
         /// <summary>
         /// Initializes a new instance of the "BeerController"/> class.
         /// </summary>
@@ -29,7 +27,6 @@ namespace BrewServe.API.Controllers
             _strategy = strategy;
             _logger = logger;
         }
-
         /// <summary>
         /// Get all beers with optional filtering query parameters for alcohol content
         ///                       (gtAlcoholByVolume = greater than, ltAlcoholByVolume = less than)
@@ -58,7 +55,6 @@ namespace BrewServe.API.Controllers
             var response = new ApiResponse<IEnumerable<BeerResponse>>(beers);
             return Ok(response);
         }
-
         /// <summary>
         /// Get beer by id
         /// </summary>
@@ -79,7 +75,6 @@ namespace BrewServe.API.Controllers
             var response = new ApiResponse<BeerResponse>(beer);
             return Ok(response);
         }
-
         /// <summary>
         /// Insert a single beer
         /// </summary>
@@ -107,7 +102,6 @@ namespace BrewServe.API.Controllers
             var response = new ApiResponse<BeerResponse>(savedBeer);
             return Ok(response);
         }
-
         /// <summary>
         /// Update a beer by id
         /// </summary>
