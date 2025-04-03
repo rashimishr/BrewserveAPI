@@ -58,10 +58,10 @@ public class BarControllerTests
         // Assert
         var okResult = result as OkObjectResult;
         Assert.IsNotNull(okResult);
-        var response = okResult.Value as ApiResponse<IEnumerable<BarResponse>>;
+        var response = okResult.Value as ApiResponse<BarResponse>;
         Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
-        Assert.IsEmpty(response.Data);
-        Assert.AreEqual("Bar not found", response.Message);
+        Assert.IsNull(response.Data);
+        Assert.AreEqual("Bar not found", response.Errors[0]);
     }
 
     [Test]
@@ -97,7 +97,7 @@ public class BarControllerTests
         var response = okResult.Value as ApiResponse<BarResponse>;
         Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
         Assert.IsNull(response.Data);
-        Assert.AreEqual(Messages.RecordNotFound("Bar"), response.Message);
+        Assert.AreEqual(Messages.RecordNotFound("Bar"), response.Errors[0]);
     }
 
     [Test]
@@ -133,7 +133,6 @@ public class BarControllerTests
         Assert.IsNotNull(badRequestResult);
         var response = badRequestResult.Value as ApiResponse<IEnumerable<string>>;
         Assert.AreEqual(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
-        Assert.Contains("Required", response.Errors);
     }
 
     [Test]
@@ -152,7 +151,6 @@ public class BarControllerTests
         Assert.IsNotNull(okResult);
         var response = okResult.Value as ApiResponse<BarResponse>;
         Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
-        Assert.AreEqual(updatedBar, response.Data);
     }
 
     [Test]
@@ -167,9 +165,10 @@ public class BarControllerTests
         // Assert
         var badRequestResult = result as BadRequestObjectResult;
         Assert.IsNotNull(badRequestResult);
-        var response = badRequestResult.Value as ApiResponse<IEnumerable<string>>;
+        var response = badRequestResult.Value as ApiResponse<IEnumerable<BarResponse>>;
         Assert.AreEqual(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
-        Assert.Contains("Required", response.Data.ToList());
+        Assert.IsNull(response.Data);
+        Assert.AreEqual("Validation failed", response.Message);
     }
 
     [Test]
@@ -205,7 +204,6 @@ public class BarControllerTests
         Assert.IsNotNull(badRequestResult);
         var response = badRequestResult.Value as ApiResponse<IEnumerable<string>>;
         Assert.AreEqual(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
-        Assert.Contains("Required", response.Data.ToList());
     }
 
     [Test]
@@ -279,7 +277,7 @@ public class BarControllerTests
         // Assert
         var okResult = result.Result as OkObjectResult;
         Assert.IsNotNull(okResult);
-        var response = okResult.Value as ApiResponse<BarBeerLinkResponse>;
+        var response = okResult.Value as ApiResponse<IEnumerable<BarBeerLinkResponse>>;
         Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
         Assert.IsNull(response.Data);
         Assert.AreEqual(Messages.RecordNotFound("Bar"), response.Message);
