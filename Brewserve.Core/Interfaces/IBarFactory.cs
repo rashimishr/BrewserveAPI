@@ -1,9 +1,8 @@
 ﻿using BrewServe.Core.Payloads;
 
-namespace BrewServe.Core.Interfaces
+namespace BrewServe.Core.Interfaces;
+
+public interface IBarFactory
 {
-    public interface IBarFactory
-    {
-        BarRequest CreateBarRequest(string name, string address);
-    }
+    BarRequest CreateBarRequest(string name, string address);
 }

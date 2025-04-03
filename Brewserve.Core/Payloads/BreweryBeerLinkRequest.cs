@@ -1,8 +1,7 @@
-﻿namespace BrewServe.Core.Payloads
+﻿namespace BrewServe.Core.Payloads;
+
+public class BreweryBeerLinkRequest
 {
-    public class BreweryBeerLinkRequest
-    {
-        public int BreweryId { get; set; }
-        public int BeerId { get; set; }
-    }
+    public int BreweryId { get; set; }
+    public int BeerId { get; set; }
 }

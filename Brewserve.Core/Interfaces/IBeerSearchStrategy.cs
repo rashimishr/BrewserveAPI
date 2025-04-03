@@ -1,9 +1,8 @@
 ﻿using BrewServe.Core.Payloads;
 
-namespace BrewServe.Core.Interfaces
+namespace BrewServe.Core.Interfaces;
+
+public interface IBeerSearchStrategy
 {
-    public interface IBeerSearchStrategy
-    {
-        Task<IEnumerable<BeerResponse>> FilterAsync();
-    }
+    Task<IEnumerable<BeerResponse>> FilterAsync();
 }

@@ -3,28 +3,35 @@ using BrewServe.Data.Interfaces;
 using Brewserve.Data.Repositories;
 using BrewServeData.EF_Core;
 
-namespace BrewServe.Data.Repositories
+namespace BrewServe.Data.Repositories;
+
+public class UnitOfWork : IUnitOfWork
 {
-    public class UnitOfWork : IUnitOfWork
+    private readonly BrewServeDbContext _context;
+
+    public UnitOfWork(BrewServeDbContext context)
     {
-        private readonly BrewServeDbContext _context;
-        public IBarRepository Bars { get; }
-        public IBeerRepository Beers { get; }
-        public IBreweryRepository Breweries { get; }
-        public IBreweryBeersLinkRepository BreweryBeersLinks { get; }
-        public IBarBeersLinkRepository BarBeersLinks { get; }
+        _context = context;
+        Bars = new BarRepository(context);
+        Beers = new BeerRepository(context);
+        Breweries = new BreweryRepository(context);
+        BreweryBeersLinks = new BreweryBeersLinkRepository(context);
+        BarBeersLinks = new BarBeersLinkRepository(context);
+    }
 
-        public UnitOfWork(BrewServeDbContext context)
-        {
-            _context = context;
+    public IBarRepository Bars { get; }
+    public IBeerRepository Beers { get; }
+    public IBreweryRepository Breweries { get; }
+    public IBreweryBeersLinkRepository BreweryBeersLinks { get; }
+    public IBarBeersLinkRepository BarBeersLinks { get; }
 
-            Bars = new BarRepository(context);
-            Beers = new BeerRepository(context);
-            Breweries = new BreweryRepository(context);
-            BreweryBeersLinks = new BreweryBeersLinkRepository(context);
-            BarBeersLinks = new BarBeersLinkRepository(context);
-        }
-        public async Task<int> SaveAsync() => await _context.SaveChangesAsync();
-        public void Dispose() => _context.Dispose();
+    public async Task<int> SaveAsync()
+    {
+        return await _context.SaveChangesAsync();
+    }
+
+    public void Dispose()
+    {
+        _context.Dispose();
     }
 }

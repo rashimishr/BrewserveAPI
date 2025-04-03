@@ -1,8 +1,7 @@
-﻿namespace BrewServe.Core.Payloads
+﻿namespace BrewServe.Core.Payloads;
+
+public class BreweryResponse
 {
-    public class BreweryResponse
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-    }
+    public int Id { get; set; }
+    public string Name { get; set; }
 }

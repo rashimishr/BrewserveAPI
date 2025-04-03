@@ -1,10 +1,9 @@
 ﻿using BrewServe.Data.Models;
 
-namespace BrewServe.Data.Interfaces
+namespace BrewServe.Data.Interfaces;
+
+public interface IBarBeersLinkRepository : IRepository<BarBeerLink>
 {
-    public interface IBarBeersLinkRepository : IRepository<BarBeerLink>
-    {
-        Task<Bar> GetAssociatedBarBeersByBarIdAsync(int barId);
-        Task<IEnumerable<Bar>> GetAssociatedBarBeersAsync();
-    }
+    Task<Bar> GetAssociatedBarBeersByBarIdAsync(int barId);
+    Task<IEnumerable<Bar>> GetAssociatedBarBeersAsync();
 }

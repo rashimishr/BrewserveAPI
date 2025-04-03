@@ -1,10 +1,8 @@
-﻿
-using System.Net.Mail;
+﻿using System.Net.Mail;
 
-namespace BrewServe.Core.Interfaces
+namespace BrewServe.Core.Interfaces;
+
+public interface ILinkService
 {
-    public interface ILinkService
-    {
-        List<LinkedResource> GenerateLinks<T>(T resource);
-    }
+    List<LinkedResource> GenerateLinks<T>(T resource);
 }

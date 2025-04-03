@@ -1,9 +1,8 @@
 ﻿using BrewServe.Data.Models;
 
-namespace BrewServe.Data.Interfaces
+namespace BrewServe.Data.Interfaces;
+
+public interface IBeerRepository : IRepository<Beer>
 {
-    public interface IBeerRepository : IRepository<Beer>
-    {
-        Task<IEnumerable<Beer>> GetBeersByAlcoholContentAsync(decimal? gtAlcoholContent, decimal? ltAlcoholContent);
-    }
+    Task<IEnumerable<Beer>> GetBeersByAlcoholContentAsync(decimal? gtAlcoholContent, decimal? ltAlcoholContent);
 }

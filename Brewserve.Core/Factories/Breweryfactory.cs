@@ -1,16 +1,15 @@
 ﻿using BrewServe.Core.Interfaces;
 using BrewServe.Core.Payloads;
 
-namespace BrewServe.Core.Factories
+namespace BrewServe.Core.Factories;
+
+public class BreweryFactory : IBreweryFactory
 {
-    public class BreweryFactory : IBreweryFactory
+    public BreweryRequest CreateBreweryRequest(string name)
     {
-        public BreweryRequest CreateBreweryRequest(string name)
+        return new BreweryRequest
         {
-            return new BreweryRequest
-            {
-                Name = name,
-            };
-        }
+            Name = name
+        };
     }
 }

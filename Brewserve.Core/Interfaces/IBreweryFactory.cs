@@ -1,9 +1,8 @@
 ﻿using BrewServe.Core.Payloads;
 
-namespace BrewServe.Core.Interfaces
+namespace BrewServe.Core.Interfaces;
+
+public interface IBreweryFactory
 {
-    public interface IBreweryFactory
-    {
-        BreweryRequest CreateBreweryRequest(string name);
-    }
+    BreweryRequest CreateBreweryRequest(string name);
 }
