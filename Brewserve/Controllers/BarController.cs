@@ -49,7 +49,7 @@ public class BarController : ControllerBase
     /// <returns>The bar details.</returns>
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(BarResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse<Bar>), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiResponse<BarResponse>), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<BarResponse>> GetBarByIdAsync(int id)
     {
         _logger.LogInformation("Fetching bar with ID {BarId}", id);
