@@ -3,6 +3,7 @@ using BrewServe.Core.Interfaces;
 using BrewServe.Core.Payloads;
 using Microsoft.AspNetCore.Mvc;
 namespace BrewServe.API.Controllers;
+
 /// <summary>
 ///     Controller for managing bars.
 /// </summary>
@@ -23,6 +24,7 @@ public class BarController : ControllerBase
         _barService = barService;
         _logger = logger;
     }
+
     /// <summary>
     ///     Get all bars
     /// </summary>
@@ -42,6 +44,7 @@ public class BarController : ControllerBase
         var response = new ApiResponse<IEnumerable<BarResponse>>(bars);
         return Ok(response);
     }
+
     /// <summary>
     ///     Get bar by id
     /// </summary>
@@ -62,13 +65,15 @@ public class BarController : ControllerBase
         var response = new ApiResponse<BarResponse>(bar);
         return Ok(response);
     }
+
     /// <summary>
     ///     Insert a single bar
     /// </summary>
     /// <param name="bar">The bar details.</param>
     /// <returns>A response indicating the result of the operation.</returns>
     [HttpPost]
-    [ProducesResponseType(typeof(ApiResponse<BarResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<BarResponse>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiResponse<BreweryResponse>), StatusCodes.Status409Conflict)]
     [ProducesResponseType( StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<BarResponse>> AddBarAsync(BarRequest bar)
     {
@@ -84,25 +89,27 @@ public class BarController : ControllerBase
         if (savedBar == null)
         {
             var errorResponse = new ApiResponse<BarResponse>(new(),Messages.RecordAlreadyExists("Bar"));
-            return Ok(errorResponse);
+            return Conflict(errorResponse);
         }
         var response = new ApiResponse<BarResponse>(savedBar);
-        return Ok(response);
+        return Created("Bar", response); ;
     }
+
     /// <summary>
     ///     Update a bar by id
     /// </summary>
     /// <param name="id">The ID of the bar to update.</param>
     /// <param name="bar">The updated bar details.</param>
-    /// <returns>A response indicating the result of the operation.</returns>
+    /// <returns>A response indicating the result of the operation. </returns>
     [HttpPut("{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse<List<string>>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse<BarResponse>),StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiResponse<List<ApiResponse<BarResponse>>>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateBar(int id, BarRequest bar)
     {
-        if (!ModelState.IsValid)
+        if (!ModelState.IsValid || id <= 0)
         {
             var errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList();
+            if (id <= 0) errors.Add(Messages.IdGreaterThanZero("Bar"));
             var errorResponse = new ApiResponse<IEnumerable<BarResponse>>(errors);
             _logger.LogError("Error occured while updating bar validation");
             return BadRequest(errorResponse);
@@ -111,8 +118,9 @@ public class BarController : ControllerBase
         bar.Id = id;
         await _barService.UpdateBarAsync(bar);
         var response = new ApiResponse<BarResponse>(Messages.RecordUpdated("Bar", id));
-        return Ok(response);
+        return Created("BarBeerLink", response);
     }
+
     /// <summary>
     ///     Insert a single bar beer link
     /// </summary>
@@ -135,6 +143,7 @@ public class BarController : ControllerBase
         var response = new ApiResponse<BarResponse>(link);
         return Ok(response);
     }
+
     /// <summary>
     ///     Get all bars with associated beers
     /// </summary>
@@ -155,6 +164,7 @@ public class BarController : ControllerBase
         var response = new ApiResponse<IEnumerable<BarBeerLinkResponse>>(link);
         return Ok(response);
     }
+
     /// <summary>
     ///     Get a single bar by id with associated beers
     /// </summary>

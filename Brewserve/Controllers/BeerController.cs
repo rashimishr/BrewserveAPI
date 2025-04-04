@@ -1,8 +1,8 @@
 ﻿using BrewServe.Core.Constants;
 using BrewServe.Core.Interfaces;
 using BrewServe.Core.Payloads;
-using BrewServe.Core.Strategies;
 using Microsoft.AspNetCore.Mvc;
+
 namespace BrewServe.API.Controllers
 {
     /// <summary>
@@ -10,11 +10,13 @@ namespace BrewServe.API.Controllers
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
+    [Produces("application/json")]
     public class BeerController : ControllerBase
     {
         private readonly IBeerService _beerService;
         private readonly IBeerSearchStrategy _strategy;
         private readonly ILogger<BeerController> _logger;
+        
         /// <summary>
         /// Initializes a new instance of the "BeerController"/> class.
         /// </summary>
@@ -27,6 +29,7 @@ namespace BrewServe.API.Controllers
             _strategy = strategy;
             _logger = logger;
         }
+        
         /// <summary>
         /// Get all beers with optional filtering query parameters for alcohol content
         ///                       (gtAlcoholByVolume = greater than, ltAlcoholByVolume = less than)
@@ -52,6 +55,7 @@ namespace BrewServe.API.Controllers
             var response = new ApiResponse<IEnumerable<BeerResponse>>(beers);
             return Ok(response);
         }
+        
         /// <summary>
         /// Get beer by id
         /// </summary>
@@ -73,13 +77,15 @@ namespace BrewServe.API.Controllers
             var response = new ApiResponse<BeerResponse>(beer);
             return Ok(response);
         }
+        
         /// <summary>
         /// Insert a single beer
         /// </summary>
         /// <param name="beer">The beer details.</param>
         /// <returns>A response indicating the result of the operation.</returns>
         [HttpPost]
-        [ProducesResponseType(typeof(ApiResponse<BeerResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<BeerResponse>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ApiResponse<BreweryResponse>), StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<BeerResponse>> AddBeerAsync(BeerRequest beer)
         {
@@ -95,11 +101,12 @@ namespace BrewServe.API.Controllers
             if (savedBeer == null)
             {
                 var errorResponse = new ApiResponse<BeerResponse>(new(),Messages.RecordAlreadyExists("Beer"));
-                return Ok(errorResponse);
+                return Conflict(errorResponse);
             }
             var response = new ApiResponse<BeerResponse>(savedBeer);
-            return Ok(response);
+            return Created("Beer", response);
         }
+      
         /// <summary>
         /// Update a beer by id
         /// </summary>
@@ -107,13 +114,14 @@ namespace BrewServe.API.Controllers
         /// <param name="beer">The updated beer details.</param>
         /// <returns>A response indicating the result of the operation.</returns>
         [HttpPut("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiResponse<List<string>>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponse<BeerResponse>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ApiResponse<BeerResponse>), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateBeer(int id, BeerRequest beer)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid || id <= 0)
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList();
+                if (id <= 0) errors.Add(Messages.IdGreaterThanZero("Beer"));
                 var errorResponse = new ApiResponse<IEnumerable<BeerResponse>>(errors);
                 _logger.LogError("Error occured while updating beer {BeerId}", id);
                 return BadRequest(errorResponse);

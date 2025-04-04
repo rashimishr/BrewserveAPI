@@ -13,4 +13,8 @@ public static class Messages
     {
         return $"{recordName}Id {id} updated successfully";
     }
+    public static string IdGreaterThanZero(string name)
+    {
+        return $"{name}Id must be greater than zero";
+    }
 }

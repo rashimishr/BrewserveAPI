@@ -3,6 +3,7 @@ using BrewServe.Core.Interfaces;
 using BrewServe.Core.Payloads;
 using Microsoft.AspNetCore.Mvc;
 namespace BrewServe.API.Controllers;
+
 /// <summary>
 ///     Controller for managing breweries.
 /// </summary>
@@ -12,6 +13,7 @@ public class BreweryController : ControllerBase
 {
     private readonly IBreweryService _breweryService;
     private readonly ILogger<BreweryController> _logger;
+   
     /// <summary>
     ///     Initializes a new instance of the "BreweryController"/> class.
     /// </summary>
@@ -22,6 +24,7 @@ public class BreweryController : ControllerBase
         _breweryService = breweryService;
         _logger = logger;
     }
+    
     /// <summary>
     ///     Get all breweries
     /// </summary>
@@ -41,6 +44,7 @@ public class BreweryController : ControllerBase
         var response = new ApiResponse<IEnumerable<BreweryResponse>>(breweries);
         return Ok(response);
     }
+    
     /// <summary>
     ///     Get brewery by id
     /// </summary>
@@ -61,13 +65,15 @@ public class BreweryController : ControllerBase
         var response = new ApiResponse<BreweryResponse>(brewery);
         return Ok(response);
     }
+    
     /// <summary>
     ///     Insert a single brewery
     /// </summary>
     /// <param name="brewery">The brewery details.</param>
     /// <returns>A response indicating the result of the operation.</returns>
     [HttpPost]
-    [ProducesResponseType(typeof(ApiResponse<BreweryResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<BreweryResponse>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiResponse<BreweryResponse>), StatusCodes.Status409Conflict)]
     [ProducesResponseType(typeof(ApiResponse<BreweryResponse>), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<BreweryResponse>> AddBreweryAsync(BreweryRequest brewery)
     {
@@ -82,12 +88,13 @@ public class BreweryController : ControllerBase
         if (savedBrewery == null)
         {
             var errorResponse = new ApiResponse<BreweryResponse>(new(),Messages.RecordAlreadyExists("Brewery"));
-            return Ok(errorResponse);
+            return Conflict(errorResponse);
         }
         _logger.LogInformation("Brewery added successfully");
         var response = new ApiResponse<BreweryResponse>(savedBrewery);
-        return Ok(response);
+        return Created("Beer", response); ;
     }
+    
     /// <summary>
     ///     Update a brewery by id
     /// </summary>
@@ -99,9 +106,10 @@ public class BreweryController : ControllerBase
     [ProducesResponseType(typeof(ApiResponse<List<string>>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateBrewery(int id, BreweryRequest brewery)
     {
-        if (!ModelState.IsValid)
+        if (!ModelState.IsValid || id <= 0)
         {
             var errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList();
+            if (id <= 0) errors.Add(Messages.IdGreaterThanZero("Beer"));
             var errorResponse = new ApiResponse<IEnumerable<BreweryResponse>>(errors);
             _logger.LogError("Invalid brewery data: {Errors}", errors);
             return BadRequest(errorResponse);
@@ -112,13 +120,14 @@ public class BreweryController : ControllerBase
         var response = new ApiResponse<BreweryResponse>(updatedBrewery, Messages.RecordUpdated("Brewery", id));
         return Ok(response);
     }
+    
     /// <summary>
     ///     Insert a single brewery beer link
     /// </summary>
     /// <param name="linkRequest">The brewery  beer link.</param>
     /// <returns>A response indicating the result of the operation.</returns>
     [HttpPost("beer")]
-    [ProducesResponseType(typeof(ApiResponse<BreweryResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<BreweryResponse>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse<List<string>>), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<BreweryResponse>> AddBreweryBeerLinkAsync(BreweryBeerLinkRequest linkRequest)
     {
@@ -132,8 +141,9 @@ public class BreweryController : ControllerBase
         _logger.LogInformation("Adding a new brewery beer link");
         var link = await _breweryService.AddBreweryBeerLinkAsync(linkRequest);
         var response = new ApiResponse<BreweryResponse>(link);
-        return Ok(response);
+        return Created("BreweryBeerLink", response); ;
     }
+    
     /// <summary>
     ///     Get all breweries with associated beers
     /// </summary>
@@ -155,6 +165,7 @@ public class BreweryController : ControllerBase
         var response = new ApiResponse<IEnumerable<BreweryBeerLinkResponse>>(link);
         return Ok(response);
     }
+    
     /// <summary>
     ///     Get a single brewery by id with associated beers
     /// </summary>
