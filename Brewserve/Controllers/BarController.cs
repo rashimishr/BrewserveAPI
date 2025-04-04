@@ -14,7 +14,7 @@ public class BarController : ControllerBase
     private readonly ILogger<BarController> _logger;
 
     /// <summary>
-    ///     Initializes a new instance of the "BeerController" class.
+    ///     Initializes a new instance of the "BarController" class.
     /// </summary>
     /// <param name="barService">The bar service.</param>
     /// <param name="logger">The logger.</param>
