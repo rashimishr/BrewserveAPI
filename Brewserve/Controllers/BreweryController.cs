@@ -4,7 +4,7 @@ using BrewServe.Core.Payloads;
 using Microsoft.AspNetCore.Mvc;
 namespace BrewServe.API.Controllers;
 /// <summary>
-///     Controller for managing beers.
+///     Controller for managing breweries.
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
@@ -81,7 +81,7 @@ public class BreweryController : ControllerBase
         var savedBrewery = await _breweryService.AddBreweryAsync(brewery);
         if (savedBrewery == null)
         {
-            var errorResponse = new ApiResponse<BreweryResponse>(Messages.RecordAlreadyExists("Brewery"));
+            var errorResponse = new ApiResponse<BreweryResponse>(null,Messages.RecordAlreadyExists("Brewery"));
             return BadRequest(errorResponse);
         }
         _logger.LogInformation("Brewery added successfully");
@@ -147,7 +147,7 @@ public class BreweryController : ControllerBase
         if (link == null || !link.Any())
         {
             var errorResponse =
-                new ApiResponse<IEnumerable<BreweryBeerLinkResponse>>(Messages.RecordNotFound("Brewery"));
+                new ApiResponse<IEnumerable<BreweryBeerLinkResponse>>(Enumerable.Empty<BreweryBeerLinkResponse>(),Messages.RecordNotFound("Brewery"));
             _logger.LogError("No breweries found with associated beers");
             return Ok(errorResponse);
         }
@@ -167,7 +167,7 @@ public class BreweryController : ControllerBase
         var link = await _breweryService.GetBreweryBeerLinkByBreweryIdAsync(breweryId);
         if (link == null)
         {
-            var errorResponse = new ApiResponse<BreweryBeerLinkResponse>(Messages.RecordNotFound("Brewery"));
+            var errorResponse = new ApiResponse<BreweryBeerLinkResponse>(new (), Messages.RecordNotFound("Brewery"));
             _logger.LogError("Brewery beer link with ID {BreweryId} not found", breweryId);
             return Ok(errorResponse);
         }

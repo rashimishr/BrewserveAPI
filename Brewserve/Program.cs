@@ -38,7 +38,6 @@ builder.Services.AddControllers()
     });
 
 // Register for db context
-builder.Services.AddScoped<BeerSearchContext>();
 builder.Services.AddDbContext<BrewServeDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -52,7 +51,6 @@ builder.Services.AddScoped<IBeerService, BeerService>();
 builder.Services.AddScoped<IBarService, BarService>();
 builder.Services.AddScoped<IBreweryService, BreweryService>();
 builder.Services.AddScoped<IBeerSearchStrategy, BeerByAlcoholContentStrategy>();
-builder.Services.AddScoped<BeerSearchContext>();
 
 // Register Logging
 builder.Host.UseSerilog();

@@ -133,6 +133,7 @@ namespace BrewServe.Tests.Controllers
             Assert.IsNotNull(badRequestResult);
             var response = badRequestResult.Value as ApiResponse<IEnumerable<BreweryResponse>>;
             Assert.AreEqual(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
+            Assert.IsTrue(response.Message.Contains("Validation failed"));
         }
 
         [Test]
@@ -241,8 +242,7 @@ namespace BrewServe.Tests.Controllers
             Assert.IsNotNull(okResult);
             var response = okResult.Value as ApiResponse<IEnumerable<BreweryBeerLinkResponse>>;
             Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
-            Assert.IsNull(response.Data);
-            Assert.AreEqual(Messages.RecordNotFound("Brewery"), response.Errors[0]);
+            Assert.AreEqual(Messages.RecordNotFound("Brewery"), response.Message);
         }
 
         [Test]
@@ -277,8 +277,7 @@ namespace BrewServe.Tests.Controllers
             Assert.IsNotNull(okResult);
             var response = okResult.Value as ApiResponse<BreweryBeerLinkResponse>;
             Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
-            Assert.IsNull(response.Data);
-            Assert.AreEqual(Messages.RecordNotFound("Brewery"), response.Errors[0]);
+            Assert.AreEqual(Messages.RecordNotFound("Brewery"), response.Message);
         }
 
     }

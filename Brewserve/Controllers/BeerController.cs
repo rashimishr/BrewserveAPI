@@ -13,15 +13,15 @@ namespace BrewServe.API.Controllers
     public class BeerController : ControllerBase
     {
         private readonly IBeerService _beerService;
-        private readonly BeerByAlcoholContentStrategy _strategy;
-        private readonly ILogger<BarController> _logger;
+        private readonly IBeerSearchStrategy _strategy;
+        private readonly ILogger<BeerController> _logger;
         /// <summary>
         /// Initializes a new instance of the "BeerController"/> class.
         /// </summary>
         /// <param name="beerService">The beer service.</param>
         /// <param name="strategy">The strategy for filtering beers by alcohol content.</param>
         /// <param name="logger">The logger.</param>
-        public BeerController(IBeerService beerService, BeerByAlcoholContentStrategy strategy, ILogger<BarController> logger)
+        public BeerController(IBeerService beerService, IBeerSearchStrategy strategy, ILogger<BeerController> logger)
         {
             _beerService = beerService;
             _strategy = strategy;
@@ -42,14 +42,14 @@ namespace BrewServe.API.Controllers
             _logger.LogInformation("Fetching beer with filter");
             if (gtAlcoholByVolume <= 0 || ltAlcoholByVolume <= 0)
             {
-                return BadRequest(new ApiResponse<List<BeerResponse>>("Alcohol content must be greater than 0"));
+                return BadRequest(new ApiResponse<List<BeerResponse>>(new(),"Alcohol content must be greater than 0"));
             }
             //set the strategy
             _strategy.SetAlcoholContent(gtAlcoholByVolume, ltAlcoholByVolume);
             var beers = await _strategy.FilterAsync();
             if (!beers.Any() || beers == null)
             {
-                var errorResponse = new ApiResponse<BarResponse>("No record found");
+                var errorResponse = new ApiResponse<BeerResponse>(new(), "No record found");
                 return Ok(errorResponse);
             }
             var response = new ApiResponse<IEnumerable<BeerResponse>>(beers);
@@ -68,7 +68,7 @@ namespace BrewServe.API.Controllers
             var beer = await _beerService.GetBeerByIdAsync(id);
             if (beer == null)
             {
-                var errorResponse = new ApiResponse<BeerResponse>(Messages.RecordNotFound("Beer"));
+                var errorResponse = new ApiResponse<BeerResponse>(new(), Messages.RecordNotFound("Beer"));
                 _logger.LogError("Error occured while fetching beers for beer {BeerId}");
                 return Ok(errorResponse);
             }
@@ -88,7 +88,7 @@ namespace BrewServe.API.Controllers
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-                var errorResponse = new ApiResponse<IEnumerable<BarResponse>>(errors);
+                var errorResponse = new ApiResponse<IEnumerable<BeerResponse>>(errors);
                 _logger.LogError("Error occured while adding beer validation for beer {BeerId}");
                 return BadRequest(errorResponse);
             }
@@ -96,7 +96,7 @@ namespace BrewServe.API.Controllers
             var savedBeer = await _beerService.AddBeerAsync(beer);
             if (savedBeer == null)
             {
-                var errorResponse = new ApiResponse<BeerResponse>(Messages.RecordAlreadyExists("Beer"));
+                var errorResponse = new ApiResponse<BeerResponse>(new(),Messages.RecordAlreadyExists("Beer"));
                 return BadRequest(errorResponse);
             }
             var response = new ApiResponse<BeerResponse>(savedBeer);
@@ -116,7 +116,7 @@ namespace BrewServe.API.Controllers
             if (!ModelState.IsValid && id != beer.Id)
             {
                 var errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList();
-                var errorResponse = new ApiResponse<IEnumerable<BarResponse>>(errors);
+                var errorResponse = new ApiResponse<IEnumerable<BeerResponse>>(errors);
                 _logger.LogError("Error occured while updating beer {BeerId}");
                 return BadRequest(errorResponse);
             }

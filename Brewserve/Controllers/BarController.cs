@@ -35,7 +35,7 @@ public class BarController : ControllerBase
         var bars = await _barService.GetBarsAsync();
         if (bars == null || !bars.Any())
         {
-            var errorResponse = new ApiResponse<BarResponse>("Bar not found");
+            var errorResponse = new ApiResponse<BarResponse>(new(),"Bar not found");
             return Ok(errorResponse);
         }
         var response = new ApiResponse<IEnumerable<BarResponse>>(bars);
@@ -54,7 +54,7 @@ public class BarController : ControllerBase
         var bar = await _barService.GetBarByIdAsync(id);
         if (bar == null)
         {
-            var errorResponse = new ApiResponse<BarResponse>(Messages.RecordNotFound("Bar"));
+            var errorResponse = new ApiResponse<BarResponse>(new(),Messages.RecordNotFound("Bar"));
             return Ok(errorResponse);
         }
         var response = new ApiResponse<BarResponse>(bar);
@@ -81,7 +81,7 @@ public class BarController : ControllerBase
         var savedBar = await _barService.AddBarAsync(bar);
         if (savedBar == null)
         {
-            var errorResponse = new ApiResponse<BarResponse>(Messages.RecordAlreadyExists("Bar"));
+            var errorResponse = new ApiResponse<BarResponse>(new(), Messages.RecordAlreadyExists("Bar"));
             return BadRequest(errorResponse);
         }
         var response = new ApiResponse<BarResponse>(savedBar);
@@ -145,7 +145,7 @@ public class BarController : ControllerBase
         var link = await _barService.GetBarBeerLinkAsync();
         if (link == null || !link.Any())
         {
-            var errorResponse = new ApiResponse<IEnumerable<BarBeerLinkResponse>>([], Messages.RecordNotFound("Bar"));
+            var errorResponse = new ApiResponse<IEnumerable<BarBeerLinkResponse>>(Enumerable.Empty<BarBeerLinkResponse>(), Messages.RecordNotFound("Bar"));
             _logger.LogError("Error occured while fetching all beer-bar link validation");
             return Ok(errorResponse);
         }
@@ -164,7 +164,7 @@ public class BarController : ControllerBase
         var link = await _barService.GetBarBeerLinkByBarIdAsync(barId);
         if (link == null)
         {
-            var errorResponse = new ApiResponse<IEnumerable<BarBeerLinkResponse>>(null, Messages.RecordNotFound("Bar"));
+            var errorResponse = new ApiResponse<IEnumerable<BarBeerLinkResponse>>(Enumerable.Empty<BarBeerLinkResponse>(), Messages.RecordNotFound("Bar"));
             _logger.LogError("Error occured while fetching beer-bar link validation for bar {BarId}");
             return Ok(errorResponse);
         }
