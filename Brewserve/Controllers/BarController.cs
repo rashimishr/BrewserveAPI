@@ -28,15 +28,16 @@ public class BarController : ControllerBase
     /// </summary>
     /// <returns>A list of all bars.</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(BarResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<BarResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<BarResponse>), StatusCodes.Status404NotFound)]
     public async Task<ActionResult> GetBarsAsync()
     {
         _logger.LogInformation("Fetching all bars");
         var bars = await _barService.GetBarsAsync();
         if (bars == null || !bars.Any())
         {
-            var errorResponse = new ApiResponse<BarResponse>(new(),"Bar not found");
-            return Ok(errorResponse);
+            var errorResponse = new ApiResponse<BarResponse>(Messages.RecordNotFound("Bar"));
+            return NotFound(errorResponse);
         }
         var response = new ApiResponse<IEnumerable<BarResponse>>(bars);
         return Ok(response);
@@ -48,14 +49,15 @@ public class BarController : ControllerBase
     /// <returns>The bar details.</returns>
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(BarResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<Bar>), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<BarResponse>> GetBarByIdAsync(int id)
     {
         _logger.LogInformation("Fetching bar with ID {BarId}", id);
         var bar = await _barService.GetBarByIdAsync(id);
         if (bar == null)
         {
-            var errorResponse = new ApiResponse<BarResponse>(new(),Messages.RecordNotFound("Bar"));
-            return Ok(errorResponse);
+            var errorResponse = new ApiResponse<BarResponse>(Messages.RecordNotFound("Bar"));
+            return NotFound(errorResponse);
         }
         var response = new ApiResponse<BarResponse>(bar);
         return Ok(response);
@@ -67,7 +69,7 @@ public class BarController : ControllerBase
     /// <returns>A response indicating the result of the operation.</returns>
     [HttpPost]
     [ProducesResponseType(typeof(ApiResponse<BarResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ApiResponse<BarResponse>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType( StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<BarResponse>> AddBarAsync(BarRequest bar)
     {
         if (!ModelState.IsValid)
@@ -81,8 +83,8 @@ public class BarController : ControllerBase
         var savedBar = await _barService.AddBarAsync(bar);
         if (savedBar == null)
         {
-            var errorResponse = new ApiResponse<BarResponse>(new(), Messages.RecordAlreadyExists("Bar"));
-            return BadRequest(errorResponse);
+            var errorResponse = new ApiResponse<BarResponse>(new(),Messages.RecordAlreadyExists("Bar"));
+            return Ok(errorResponse);
         }
         var response = new ApiResponse<BarResponse>(savedBar);
         return Ok(response);
@@ -98,7 +100,7 @@ public class BarController : ControllerBase
     [ProducesResponseType(typeof(ApiResponse<List<string>>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateBar(int id, BarRequest bar)
     {
-        if (!ModelState.IsValid && id != bar.Id)
+        if (!ModelState.IsValid)
         {
             var errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList();
             var errorResponse = new ApiResponse<IEnumerable<BarResponse>>(errors);
@@ -139,15 +141,16 @@ public class BarController : ControllerBase
     /// <returns>A list of all bars.</returns>
     [HttpGet("beer")]
     [ProducesResponseType(typeof(ApiResponse<BarBeerLinkResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<BarBeerLinkResponse>), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IEnumerable<BarBeerLinkResponse>>> GetAssociatedBarBeersAsync()
     {
         _logger.LogInformation("Fetching all bars and associated beers");
         var link = await _barService.GetBarBeerLinkAsync();
         if (link == null || !link.Any())
         {
-            var errorResponse = new ApiResponse<IEnumerable<BarBeerLinkResponse>>(Enumerable.Empty<BarBeerLinkResponse>(), Messages.RecordNotFound("Bar"));
+            var errorResponse = new ApiResponse<IEnumerable<BarBeerLinkResponse>>( Messages.RecordNotFound("Bar"));
             _logger.LogError("Error occured while fetching all beer-bar link validation");
-            return Ok(errorResponse);
+            return NotFound(errorResponse);
         }
         var response = new ApiResponse<IEnumerable<BarBeerLinkResponse>>(link);
         return Ok(response);
@@ -159,14 +162,15 @@ public class BarController : ControllerBase
     /// <returns>The bar beer link details.</returns>
     [HttpGet("{barId}/beer")]
     [ProducesResponseType(typeof(ApiResponse<BarBeerLinkResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<BarBeerLinkResponse>), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<BarBeerLinkResponse>> GetAssociatedBarBeerByBarIdAsync(int barId)
     {
         var link = await _barService.GetBarBeerLinkByBarIdAsync(barId);
         if (link == null)
         {
-            var errorResponse = new ApiResponse<IEnumerable<BarBeerLinkResponse>>(Enumerable.Empty<BarBeerLinkResponse>(), Messages.RecordNotFound("Bar"));
-            _logger.LogError("Error occured while fetching beer-bar link validation for bar {BarId}");
-            return Ok(errorResponse);
+            var errorResponse = new ApiResponse<IEnumerable<BarBeerLinkResponse>>(Messages.RecordNotFound("Bar"));
+            _logger.LogError("Error occured while fetching beer-bar link validation for bar {BarId}", barId);
+            return NotFound(errorResponse);
         }
         _logger.LogInformation("Fetching bar beer link for bar ID {BarId}", barId);
         var response = new ApiResponse<BarBeerLinkResponse>(link);

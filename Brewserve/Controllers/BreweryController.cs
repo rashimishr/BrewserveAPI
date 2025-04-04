@@ -28,15 +28,15 @@ public class BreweryController : ControllerBase
     /// <returns>A list of all breweries.</returns>
     [HttpGet]
     [ProducesResponseType(typeof(ApiResponse<IEnumerable<BreweryResponse>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<BreweryResponse>), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IEnumerable<BreweryResponse>>> GetBreweriesAsync()
     {
         _logger.LogInformation("Fetching all breweries");
         var breweries = await _breweryService.GetBreweriesAsync();
         if (breweries == null || !breweries.Any())
         {
-            var errorResponse =
-                new ApiResponse<IEnumerable<BreweryResponse>>(Enumerable.Empty<BreweryResponse>(), "Brewery not found");
-            return Ok(errorResponse);
+            var errorResponse = new ApiResponse<IEnumerable<BreweryResponse>>(Messages.RecordNotFound("Brewery"));
+            return NotFound(errorResponse);
         }
         var response = new ApiResponse<IEnumerable<BreweryResponse>>(breweries);
         return Ok(response);
@@ -48,15 +48,15 @@ public class BreweryController : ControllerBase
     /// <returns>The brewery details.</returns>
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(ApiResponse<BreweryResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<BreweryResponse>), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<BreweryResponse>> GetBreweryByIdAsync(int id)
     {
         _logger.LogInformation("Fetching brewery with ID {BreweryId}", id);
         var brewery = await _breweryService.GetBreweryByIdAsync(id);
         if (brewery == null)
         {
-            var errorResponse = new ApiResponse<BreweryResponse>(null, Messages.RecordNotFound("Brewery"));
-            _logger.LogError("Brewery with ID {BreweryId} not found", id);
-            return Ok(errorResponse);
+            var errorResponse = new ApiResponse<BreweryResponse>(Messages.RecordNotFound("Brewery"));
+            return NotFound(errorResponse);
         }
         var response = new ApiResponse<BreweryResponse>(brewery);
         return Ok(response);
@@ -81,8 +81,8 @@ public class BreweryController : ControllerBase
         var savedBrewery = await _breweryService.AddBreweryAsync(brewery);
         if (savedBrewery == null)
         {
-            var errorResponse = new ApiResponse<BreweryResponse>(null,Messages.RecordAlreadyExists("Brewery"));
-            return BadRequest(errorResponse);
+            var errorResponse = new ApiResponse<BreweryResponse>(new(),Messages.RecordAlreadyExists("Brewery"));
+            return Ok(errorResponse);
         }
         _logger.LogInformation("Brewery added successfully");
         var response = new ApiResponse<BreweryResponse>(savedBrewery);
@@ -95,11 +95,11 @@ public class BreweryController : ControllerBase
     /// <param name="brewery">The updated brewery details.</param>
     /// <returns>A response indicating the result of the operation.</returns>
     [HttpPut("{id}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<BreweryResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<List<string>>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateBrewery(int id, BreweryRequest brewery)
     {
-        if (!ModelState.IsValid && id != brewery.Id)
+        if (!ModelState.IsValid)
         {
             var errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList();
             var errorResponse = new ApiResponse<IEnumerable<BreweryResponse>>(errors);
@@ -140,6 +140,7 @@ public class BreweryController : ControllerBase
     /// <returns>A list of all breweries.</returns>
     [HttpGet("beer")]
     [ProducesResponseType(typeof(ApiResponse<IEnumerable<BreweryBeerLinkResponse>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<BreweryResponse>), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<IEnumerable<BreweryBeerLinkResponse>>> GetAssociatedBreweryBeersAsync()
     {
         _logger.LogInformation("Fetching all breweries and associated beers");
@@ -147,9 +148,9 @@ public class BreweryController : ControllerBase
         if (link == null || !link.Any())
         {
             var errorResponse =
-                new ApiResponse<IEnumerable<BreweryBeerLinkResponse>>(Enumerable.Empty<BreweryBeerLinkResponse>(),Messages.RecordNotFound("Brewery"));
+                new ApiResponse<IEnumerable<BreweryBeerLinkResponse>>(Messages.RecordNotFound("Brewery"));
             _logger.LogError("No breweries found with associated beers");
-            return Ok(errorResponse);
+            return NotFound(errorResponse);
         }
         var response = new ApiResponse<IEnumerable<BreweryBeerLinkResponse>>(link);
         return Ok(response);
@@ -161,15 +162,16 @@ public class BreweryController : ControllerBase
     /// <returns>The brewery beer link details.</returns>
     [HttpGet("{breweryId}/beer")]
     [ProducesResponseType(typeof(ApiResponse<BreweryBeerLinkResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<BreweryResponse>), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<BreweryBeerLinkResponse>> GetAssociatedBreweryBeerByBreweryIdAsync(int breweryId)
     {
         _logger.LogInformation("Fetching brewery beer link with ID {BreweryId}", breweryId);
         var link = await _breweryService.GetBreweryBeerLinkByBreweryIdAsync(breweryId);
         if (link == null)
         {
-            var errorResponse = new ApiResponse<BreweryBeerLinkResponse>(new (), Messages.RecordNotFound("Brewery"));
+            var errorResponse = new ApiResponse<BreweryBeerLinkResponse>(Messages.RecordNotFound("Brewery"));
             _logger.LogError("Brewery beer link with ID {BreweryId} not found", breweryId);
-            return Ok(errorResponse);
+            return NotFound(errorResponse);
         }
         var response = new ApiResponse<BreweryBeerLinkResponse>(link);
         return Ok(response);
