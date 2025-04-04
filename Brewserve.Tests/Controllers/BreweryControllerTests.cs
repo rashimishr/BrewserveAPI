@@ -100,7 +100,7 @@ namespace BrewServe.Tests.Controllers
         }
 
         [Test]
-        public async Task AddBreweryAsync_ReturnsOkResult_WithSavedBrewery()
+        public async Task AddBreweryAsync_ReturnsCreatedResult_WithSavedBrewery()
         {
             // Arrange
             var breweryRequest = new BreweryRequest { Name = "New Brewery" };
@@ -111,10 +111,10 @@ namespace BrewServe.Tests.Controllers
             var result = await _controller.AddBreweryAsync(breweryRequest);
 
             // Assert
-            var okResult = result.Result as OkObjectResult;
-            Assert.IsNotNull(okResult);
-            var response = okResult.Value as ApiResponse<BreweryResponse>;
-            Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
+            var createdResult = result.Result as CreatedResult;
+            Assert.IsNotNull(createdResult);
+            var response = createdResult.Value as ApiResponse<BreweryResponse>;
+            Assert.AreEqual(StatusCodes.Status201Created, createdResult.StatusCode);
             Assert.AreEqual(savedBrewery, response.Data);
         }
 
@@ -171,7 +171,7 @@ namespace BrewServe.Tests.Controllers
         }
 
         [Test]
-        public async Task AddBreweryBeerLinkAsync_ReturnsOkResult_WithLink()
+        public async Task AddBreweryBeerLinkAsync_ReturnsResult_WithLink()
         {
             // Arrange
             var linkRequest = new BreweryBeerLinkRequest { BreweryId = 1, BeerId = 1 };
@@ -182,10 +182,10 @@ namespace BrewServe.Tests.Controllers
             var result = await _controller.AddBreweryBeerLinkAsync(linkRequest);
 
             // Assert
-            var okResult = result.Result as OkObjectResult;
-            Assert.IsNotNull(okResult);
-            var response = okResult.Value as ApiResponse<BreweryResponse>;
-            Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
+            var createdResult = result.Result as CreatedResult;
+            Assert.IsNotNull(createdResult);
+            var response = createdResult.Value as ApiResponse<BreweryResponse>;
+            Assert.AreEqual(StatusCodes.Status201Created, createdResult.StatusCode);
             Assert.AreEqual(linkResponse, response.Data);
         }
 

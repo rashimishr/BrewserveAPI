@@ -99,7 +99,7 @@ public class BarControllerTests
     }
 
     [Test]
-    public async Task AddBarAsync_ReturnsOkResult_WithSavedBar()
+    public async Task AddBarAsync_ReturnsCreatedResult_WithSavedBar()
     {
         // Arrange
         var barRequest = new BarRequest { Name = "New Bar" };
@@ -110,10 +110,10 @@ public class BarControllerTests
         var result = await _controller.AddBarAsync(barRequest);
 
         // Assert
-        var okResult = result.Result as OkObjectResult;
-        Assert.IsNotNull(okResult);
-        var response = okResult.Value as ApiResponse<BarResponse>;
-        Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
+        var createdResult = result.Result as CreatedResult;
+        Assert.IsNotNull(createdResult);
+        var response = createdResult.Value as ApiResponse<BarResponse>;
+        Assert.AreEqual(StatusCodes.Status201Created, createdResult.StatusCode);
         Assert.AreEqual(savedBar, response.Data);
     }
 

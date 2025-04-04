@@ -34,10 +34,8 @@ public class BreweryService : IBreweryService
     }
     public async Task<BreweryResponse> UpdateBreweryAsync(BreweryRequest brewery)
     {
-        var breweryUpdated = await _unitOfWork.Breweries.GetByIdAsync(brewery.Id);
-        var breweryEntity = _mapper.Map(brewery, brewery);
-        breweryEntity.Id = brewery.Id;
-        await _unitOfWork.Breweries.UpdateAsync(breweryUpdated);
+        var breweryEntity = _mapper.Map<Brewery>(brewery);
+        await _unitOfWork.Breweries.UpdateAsync(breweryEntity);
         await _unitOfWork.SaveAsync();
         return _mapper.Map<BreweryResponse>(breweryEntity);
     }

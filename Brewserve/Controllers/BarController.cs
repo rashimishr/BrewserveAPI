@@ -102,7 +102,7 @@ public class BarController : ControllerBase
     /// <param name="bar">The updated bar details.</param>
     /// <returns>A response indicating the result of the operation. </returns>
     [HttpPut("{id}")]
-    [ProducesResponseType(typeof(ApiResponse<BarResponse>),StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiResponse<BarResponse>),StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<List<ApiResponse<BarResponse>>>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateBar(int id, BarRequest bar)
     {
@@ -118,7 +118,7 @@ public class BarController : ControllerBase
         bar.Id = id;
         await _barService.UpdateBarAsync(bar);
         var response = new ApiResponse<BarResponse>(Messages.RecordUpdated("Bar", id));
-        return Created("BarBeerLink", response);
+        return Ok(response);
     }
 
     /// <summary>

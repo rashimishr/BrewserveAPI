@@ -101,7 +101,7 @@ namespace BrewServe.Tests.Controllers
         }
 
         [Test]
-        public async Task AddBeerAsync_ReturnsOkResult_WithSavedBeer()
+        public async Task AddBeerAsync_ReturnsCreatedResult_WithSavedBeer()
         {
             // Arrange
             var beerRequest = new BeerRequest { Name = "New Beer", PercentageAlcoholByVolume = 5.0m };
@@ -112,10 +112,10 @@ namespace BrewServe.Tests.Controllers
             var result = await _controller.AddBeerAsync(beerRequest);
 
             // Assert
-            var okResult = result.Result as OkObjectResult;
-            Assert.IsNotNull(okResult);
-            var response = okResult.Value as ApiResponse<BeerResponse>;
-            Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
+            var createdResult = result.Result as CreatedResult;
+            Assert.IsNotNull(createdResult);
+            var response = createdResult.Value as ApiResponse<BeerResponse>;
+            Assert.AreEqual(StatusCodes.Status201Created, createdResult.StatusCode);
             Assert.AreEqual(savedBeer, response.Data);
         }
 

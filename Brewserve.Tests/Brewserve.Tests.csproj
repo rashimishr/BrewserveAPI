@@ -23,10 +23,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Services\" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<ProjectReference Include="..\BrewServe.Core\BrewServe.Core.csproj" />
 		<ProjectReference Include="..\BrewServe.Data\BrewServe.Data.csproj" />
 		<ProjectReference Include="..\BrewServe\BrewServe.API.csproj" />

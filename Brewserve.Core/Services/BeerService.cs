@@ -29,7 +29,6 @@ public class BeerService(IUnitOfWork unitOfWork, IMapper mapper) : IBeerService
     public async Task<BeerResponse> UpdateBeerAsync(BeerRequest beer)
     {
         var beerEntity = _mapper.Map<Beer>(beer);
-        beerEntity.Id = beer.Id;
         await _unitOfWork.Beers.UpdateAsync(beerEntity);
         await _unitOfWork.SaveAsync();
         return _mapper.Map<BeerResponse>(beerEntity);
