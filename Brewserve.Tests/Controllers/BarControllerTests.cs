@@ -47,7 +47,7 @@ public class BarControllerTests
     }
 
     [Test]
-    public async Task GetBarsAsync_ReturnsOkResult_WithEmptyList_WhenNoBarsFound()
+    public async Task GetBarsAsync_ReturnsNotFoundResult_WithEmptyList_WhenNoBarsFound()
     {
         // Arrange
         _mockBarService.Setup(service => service.GetBarsAsync()).ReturnsAsync(new List<BarResponse>());
@@ -56,11 +56,11 @@ public class BarControllerTests
         var result = await _controller.GetBarsAsync();
 
         // Assert
-        var okResult = result as OkObjectResult;
-        Assert.IsNotNull(okResult);
-        var response = okResult.Value as ApiResponse<BarResponse>;
-        Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
-        Assert.AreEqual("Bar not found", response.Message);
+        var notFoundResult = result as NotFoundObjectResult;
+        Assert.IsNotNull(notFoundResult);
+        var response = notFoundResult.Value as ApiResponse<BarResponse>;
+        Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
+        Assert.AreEqual("Bar not found", response.Errors[0]);
     }
 
     [Test]
@@ -82,7 +82,7 @@ public class BarControllerTests
     }
 
     [Test]
-    public async Task GetBarByIdAsync_ReturnsOkResult_WithErrorMessage_WhenBarNotFound()
+    public async Task GetBarByIdAsync_ReturnsNotFoundResult_WithErrorMessage_WhenBarNotFound()
     {
         // Arrange
         _mockBarService.Setup(service => service.GetBarByIdAsync(1)).ReturnsAsync((BarResponse)null);
@@ -91,11 +91,11 @@ public class BarControllerTests
         var result = await _controller.GetBarByIdAsync(1);
 
         // Assert
-        var okResult = result.Result as OkObjectResult;
-        Assert.IsNotNull(okResult);
-        var response = okResult.Value as ApiResponse<BarResponse>;
-        Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
-        Assert.AreEqual(Messages.RecordNotFound("Bar"), response.Message);
+        var notFoundResult = result.Result as NotFoundObjectResult;
+        Assert.IsNotNull(notFoundResult);
+        var response = notFoundResult.Value as ApiResponse<BarResponse>;
+        Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
+        Assert.AreEqual(Messages.RecordNotFound("Bar"), response.Errors[0]);
     }
 
     [Test]
@@ -228,7 +228,7 @@ public class BarControllerTests
     }
 
     [Test]
-    public async Task GetAssociatedBarBeersAsync_ReturnsOkResult_WithErrorMessage_WhenNoLinksFound()
+    public async Task GetAssociatedBarBeersAsync_ReturnsNotFoundResult_WithErrorMessage_WhenNoLinksFound()
     {
         // Arrange
         _mockBarService.Setup(service => service.GetBarBeerLinkAsync()).ReturnsAsync(new List<BarBeerLinkResponse>());
@@ -237,12 +237,12 @@ public class BarControllerTests
         var result = await _controller.GetAssociatedBarBeersAsync();
 
         // Assert
-        var okResult = result.Result as OkObjectResult;
-        Assert.IsNotNull(okResult);
-        var response = okResult.Value as ApiResponse<IEnumerable<BarBeerLinkResponse>>;
-        Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
-        Assert.IsEmpty(response.Data);
-        Assert.AreEqual(Messages.RecordNotFound("Bar"), response.Message);
+        var notFoundResult = result.Result as NotFoundObjectResult;
+        Assert.IsNotNull(notFoundResult);
+        var response = notFoundResult.Value as ApiResponse<IEnumerable<BarBeerLinkResponse>>;
+        Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
+        Assert.IsNull(response.Data);
+        Assert.AreEqual(Messages.RecordNotFound("Bar"), response.Errors[0]);
     }
 
     [Test]
@@ -265,7 +265,7 @@ public class BarControllerTests
     }
 
     [Test]
-    public async Task GetAssociatedBarBeerByBarIdAsync_ReturnsOkResult_WithErrorMessage_WhenLinkNotFound()
+    public async Task GetAssociatedBarBeerByBarIdAsync_ReturnsNotFoundResult_WithErrorMessage_WhenLinkNotFound()
     {
         // Arrange
         _mockBarService.Setup(service => service.GetBarBeerLinkByBarIdAsync(1)).ReturnsAsync((BarBeerLinkResponse)null);
@@ -274,11 +274,11 @@ public class BarControllerTests
         var result = await _controller.GetAssociatedBarBeerByBarIdAsync(1);
 
         // Assert
-        var okResult = result.Result as OkObjectResult;
-        Assert.IsNotNull(okResult);
-        var response = okResult.Value as ApiResponse<IEnumerable<BarBeerLinkResponse>>;
-        Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
-        Assert.IsEmpty(response.Data);
-        Assert.AreEqual(Messages.RecordNotFound("Bar"), response.Message);
+        var notFoundresult = result.Result as NotFoundObjectResult;
+        Assert.IsNotNull(notFoundresult);
+        var response = notFoundresult.Value as ApiResponse<IEnumerable<BarBeerLinkResponse>>;
+        Assert.AreEqual(StatusCodes.Status404NotFound, notFoundresult.StatusCode);
+        Assert.IsNull(response.Data);
+        Assert.AreEqual(Messages.RecordNotFound("Bar"), response.Errors[0]);
     }
 }

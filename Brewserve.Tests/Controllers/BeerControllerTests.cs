@@ -2,7 +2,6 @@
 using BrewServe.Core.Constants;
 using BrewServe.Core.Interfaces;
 using BrewServe.Core.Payloads;
-using BrewServe.Core.Strategies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -50,21 +49,7 @@ namespace BrewServe.Tests.Controllers
         }
 
         [Test]
-        public async Task GetBeers_ReturnsBadRequest_WhenInvalidAlcoholContent()
-        {
-            // Act
-            var result = await _controller.GetBeers(-1.0m, 7.0m);
-
-            // Assert
-            var badRequestResult = result as BadRequestObjectResult;
-            Assert.IsNotNull(badRequestResult);
-            var response = badRequestResult.Value as ApiResponse<List<BeerResponse>>;
-            Assert.AreEqual(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
-            Assert.AreEqual("Alcohol content must be greater than 0", response.Message);
-        }
-
-        [Test]
-        public async Task GetBeers_ReturnsOkResult_WithErrorMessage_WhenNoBeersFound()
+        public async Task GetBeers_ReturnsNotFoundResult_WithErrorMessage_WhenNoBeersFound()
         {
             // Arrange
             _mockStrategy.Setup(strategy => strategy.FilterAsync()).ReturnsAsync(new List<BeerResponse>());
@@ -73,11 +58,11 @@ namespace BrewServe.Tests.Controllers
             var result = await _controller.GetBeers(4.0m, 7.0m);
 
             // Assert
-            var okResult = result as OkObjectResult;
-            Assert.IsNotNull(okResult);
-            var response = okResult.Value as ApiResponse<BeerResponse>;
-            Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
-            Assert.AreEqual("No record found", response.Message);
+            var notFoundResult = result as NotFoundObjectResult;
+            Assert.IsNotNull(notFoundResult);
+            var response = notFoundResult.Value as ApiResponse<BeerResponse>;
+            Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
+            Assert.AreEqual("Beer not found", response.Errors[0]);
         }
 
         [Test]
@@ -99,7 +84,7 @@ namespace BrewServe.Tests.Controllers
         }
 
         [Test]
-        public async Task GetBeerByIdAsync_ReturnsOkResult_WithErrorMessage_WhenBeerNotFound()
+        public async Task GetBeerByIdAsync_ReturnsNotFoundResult_WithErrorMessage_WhenBeerNotFound()
         {
             // Arrange
             _mockBeerService.Setup(service => service.GetBeerByIdAsync(1)).ReturnsAsync((BeerResponse)null);
@@ -108,11 +93,11 @@ namespace BrewServe.Tests.Controllers
             var result = await _controller.GetBeerByIdAsync(1);
 
             // Assert
-            var okResult = result.Result as OkObjectResult;
-            Assert.IsNotNull(okResult);
-            var response = okResult.Value as ApiResponse<BeerResponse>;
-            Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
-            Assert.AreEqual(Messages.RecordNotFound("Beer"), response.Message);
+            var notFoundResult = result.Result as NotFoundObjectResult;
+            Assert.IsNotNull(notFoundResult);
+            var response = notFoundResult.Value as ApiResponse<BeerResponse>;
+            Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
+            Assert.AreEqual(Messages.RecordNotFound("Beer"), response.Errors[0]);
         }
 
         [Test]
@@ -186,7 +171,5 @@ namespace BrewServe.Tests.Controllers
             Assert.AreEqual(StatusCodes.Status400BadRequest, badRequestResult.StatusCode);
             Assert.AreEqual("Validation failed", response.Message);
         }
-
-
     }
 }

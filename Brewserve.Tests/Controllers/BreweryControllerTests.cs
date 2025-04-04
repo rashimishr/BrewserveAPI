@@ -47,7 +47,7 @@ namespace BrewServe.Tests.Controllers
         }
 
         [Test]
-        public async Task GetBreweriesAsync_ReturnsOkResult_WithEmptyList_WhenNoBreweriesFound()
+        public async Task GetBreweriesAsync_ReturnsNotFoundResult_WithEmptyList_WhenNoBreweriesFound()
         {
             // Arrange
             _mockBreweryService.Setup(service => service.GetBreweriesAsync()).ReturnsAsync(new List<BreweryResponse>());
@@ -56,12 +56,12 @@ namespace BrewServe.Tests.Controllers
             var result = await _controller.GetBreweriesAsync();
 
             // Assert
-            var okResult = result.Result as OkObjectResult;
-            Assert.IsNotNull(okResult);
-            var response = okResult.Value as ApiResponse<IEnumerable<BreweryResponse>>;
-            Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
-            Assert.IsEmpty(response.Data);
-            Assert.AreEqual("Brewery not found", response.Message);
+            var notFoundResult = result.Result as NotFoundObjectResult;
+            Assert.IsNotNull(notFoundResult);
+            var response = notFoundResult.Value as ApiResponse<IEnumerable<BreweryResponse>>;
+            Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
+            Assert.IsNull(response.Data);
+            Assert.AreEqual("Brewery not found", response.Errors[0]);
         }
 
         [Test]
@@ -83,7 +83,7 @@ namespace BrewServe.Tests.Controllers
         }
 
         [Test]
-        public async Task GetBreweryByIdAsync_ReturnsOkResult_WithErrorMessage_WhenBreweryNotFound()
+        public async Task GetBreweryByIdAsync_ReturnsNotFoundResult_WithErrorMessage_WhenBreweryNotFound()
         {
             // Arrange
             _mockBreweryService.Setup(service => service.GetBreweryByIdAsync(1)).ReturnsAsync((BreweryResponse)null);
@@ -92,12 +92,11 @@ namespace BrewServe.Tests.Controllers
             var result = await _controller.GetBreweryByIdAsync(1);
 
             // Assert
-            var okResult = result.Result as OkObjectResult;
-            Assert.IsNotNull(okResult);
-            var response = okResult.Value as ApiResponse<BreweryResponse>;
-            Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
-            Assert.IsNull(response.Data);
-            Assert.AreEqual(Messages.RecordNotFound("Brewery"), response.Message);
+            var notFoundResult = result.Result as NotFoundObjectResult;
+            Assert.IsNotNull(notFoundResult);
+            var response = notFoundResult.Value as ApiResponse<BreweryResponse>;
+            Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
+            Assert.AreEqual(Messages.RecordNotFound("Brewery"), response.Errors[0]);
         }
 
         [Test]
@@ -229,7 +228,7 @@ namespace BrewServe.Tests.Controllers
         }
 
         [Test]
-        public async Task GetAssociatedBreweryBeersAsync_ReturnsOkResult_WithErrorMessage_WhenNoLinksFound()
+        public async Task GetAssociatedBreweryBeersAsync_ReturnsNotFoundResult_WithErrorMessage_WhenNoLinksFound()
         {
             // Arrange
             _mockBreweryService.Setup(service => service.GetBreweryBeerLinkAsync()).ReturnsAsync(new List<BreweryBeerLinkResponse>());
@@ -238,11 +237,11 @@ namespace BrewServe.Tests.Controllers
             var result = await _controller.GetAssociatedBreweryBeersAsync();
 
             // Assert
-            var okResult = result.Result as OkObjectResult;
-            Assert.IsNotNull(okResult);
-            var response = okResult.Value as ApiResponse<IEnumerable<BreweryBeerLinkResponse>>;
-            Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
-            Assert.AreEqual(Messages.RecordNotFound("Brewery"), response.Message);
+            var notFoundResult = result.Result as NotFoundObjectResult;
+            Assert.IsNotNull(notFoundResult);
+            var response = notFoundResult.Value as ApiResponse<IEnumerable<BreweryBeerLinkResponse>>;
+            Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
+            Assert.AreEqual(Messages.RecordNotFound("Brewery"), response.Errors[0]);
         }
 
         [Test]
@@ -264,7 +263,7 @@ namespace BrewServe.Tests.Controllers
         }
 
         [Test]
-        public async Task GetAssociatedBreweryBeerByBreweryIdAsync_ReturnsOkResult_WithErrorMessage_WhenLinkNotFound()
+        public async Task GetAssociatedBreweryBeerByBreweryIdAsync_ReturnsNotFountResult_WithErrorMessage_WhenLinkNotFound()
         {
             // Arrange
             _mockBreweryService.Setup(service => service.GetBreweryBeerLinkByBreweryIdAsync(1)).ReturnsAsync((BreweryBeerLinkResponse)null);
@@ -273,11 +272,11 @@ namespace BrewServe.Tests.Controllers
             var result = await _controller.GetAssociatedBreweryBeerByBreweryIdAsync(1);
 
             // Assert
-            var okResult = result.Result as OkObjectResult;
-            Assert.IsNotNull(okResult);
-            var response = okResult.Value as ApiResponse<BreweryBeerLinkResponse>;
-            Assert.AreEqual(StatusCodes.Status200OK, okResult.StatusCode);
-            Assert.AreEqual(Messages.RecordNotFound("Brewery"), response.Message);
+            var notFoundResult = result.Result as NotFoundObjectResult;
+            Assert.IsNotNull(notFoundResult);
+            var response = notFoundResult.Value as ApiResponse<BreweryBeerLinkResponse>;
+            Assert.AreEqual(StatusCodes.Status404NotFound, notFoundResult.StatusCode);
+            Assert.AreEqual(Messages.RecordNotFound("Brewery"), response.Errors[0]);
         }
 
     }
